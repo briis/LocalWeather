@@ -2,7 +2,15 @@
 set -euo pipefail
 
 APP_DIR=/opt/localweather
-REPO_URL=""   # set this to your git remote, or leave empty to copy files manually
+REPO_URL="https://github.com/briis/LocalWeather"
+
+# GitHub no longer accepts passwords. Pass a Personal Access Token instead:
+#   GITHUB_TOKEN=ghp_xxx bash deploy.sh
+if [ -n "${GITHUB_TOKEN:-}" ]; then
+    CLONE_URL="https://${GITHUB_TOKEN}@github.com/briis/LocalWeather"
+else
+    CLONE_URL="$REPO_URL"
+fi
 
 echo "==> Installing system packages"
 apt-get update -qq
@@ -20,7 +28,7 @@ if [ -n "$REPO_URL" ]; then
     if [ -d "$APP_DIR/.git" ]; then
         git -C "$APP_DIR" pull
     else
-        git clone "$REPO_URL" "$APP_DIR"
+        git clone "$CLONE_URL" "$APP_DIR"
     fi
 else
     echo "==> Copying files from current directory"
