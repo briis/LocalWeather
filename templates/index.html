@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Local Weather</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+  <div class="weather-app" id="app">
+
+    <button class="lang-toggle" id="lang-toggle">DA</button>
+
+    <!-- Hero -->
+    <header class="hero">
+      <div class="location">
+        <span class="station-name">{{ data.mb_stationname if data and data.mb_stationname else 'Weather Station' }}</span>
+        <span class="conditions-label">{{ data.conditions if data and data.conditions else '—' }}</span>
+      </div>
+      <div class="temp-hero">
+        <span class="temp-now" id="temp-now">{{ '%.0f'|format(data.temperature) if data and data.temperature is not none else '—' }}°</span>
+      </div>
+      <div class="temp-range">
+        <span><span data-i18n="high">H</span>: <strong id="temp-max">{{ '%.0f'|format(data.tempmax) if data and data.tempmax is not none else '—' }}°</strong></span>
+        <span><span data-i18n="low">L</span>: <strong id="temp-min">{{ '%.0f'|format(data.tempmin) if data and data.tempmin is not none else '—' }}°</strong></span>
+      </div>
+      <div class="description-text" id="description">{{ data.description if data and data.description else '' }}</div>
+      <div class="last-updated">
+        <span id="last-updated-time"></span>
+      </div>
+    </header>
+
+    <!-- Cards grid -->
+    <main class="cards-grid">
+
+      <!-- Wind -->
+      <div class="card card-wind">
+        <div class="card-label" data-i18n="wind">WIND</div>
+        <div class="wind-compass">
+          <div class="compass-ring">
+            <span class="compass-pt n">N</span>
+            <span class="compass-pt e">E</span>
+            <span class="compass-pt s">S</span>
+            <span class="compass-pt w">W</span>
+            <div class="compass-needle" id="compass-needle" style="transform: rotate({{ data.windbearing if data and data.windbearing is not none else 0 }}deg)"></div>
+          </div>
+        </div>
+        <div class="wind-info">
+          <div class="wind-main" id="wind-speed">{{ '%.1f'|format(data.windspeedavg) if data and data.windspeedavg is not none else '—' }} <span class="unit">m/s</span></div>
+          <div class="wind-sub">
+            <span id="wind-dir-label">{{ wind_dir }}</span> &nbsp;·&nbsp; <span data-i18n="gusts">Gusts</span> <span id="wind-gust">{{ '%.1f'|format(data.windgust) if data and data.windgust is not none else '—' }}</span> m/s
+          </div>
+          <div class="wind-sub"><span data-i18n="beaufort">Beaufort</span> <span id="beaufort">{{ data.beaufort if data and data.beaufort is not none else '—' }}</span></div>
+        </div>
+      </div>
+
+      <!-- Rain -->
+      <div class="card card-rain">
+        <div class="card-label" data-i18n="rain">RAIN</div>
+        <div class="rain-icon">🌧</div>
+        <div class="metric-big" id="rain-rate">{{ '%.1f'|format(data.rainrate) if data and data.rainrate is not none else '0.0' }} <span class="unit">mm/h</span></div>
+        <div class="metric-row">
+          <div class="metric-item">
+            <div class="metric-label" data-i18n="today">Today</div>
+            <div class="metric-value" id="rain-today">{{ '%.1f'|format(data.raintoday) if data and data.raintoday is not none else '0.0' }} mm</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-label" data-i18n="yesterday">Yesterday</div>
+            <div class="metric-value" id="rain-yesterday">{{ '%.1f'|format(data.rainyesterday) if data and data.rainyesterday is not none else '0.0' }} mm</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Humidity & Dew -->
+      <div class="card card-humidity">
+        <div class="card-label" data-i18n="humidity">HUMIDITY</div>
+        <div class="humidity-gauge">
+          <svg viewBox="0 0 120 120" class="gauge-svg">
+            <circle cx="60" cy="60" r="50" class="gauge-bg"/>
+            <circle cx="60" cy="60" r="50" class="gauge-fill" id="humidity-arc"
+              stroke-dasharray="{{ (data.humidity / 100 * 314.16)|round(1) if data and data.humidity is not none else 0 }} 314.16"
+              stroke-dashoffset="78.54"/>
+            <text x="60" y="65" text-anchor="middle" class="gauge-text" id="humidity-val">{{ data.humidity if data and data.humidity is not none else '—' }}%</text>
+          </svg>
+        </div>
+        <div class="metric-row">
+          <div class="metric-item">
+            <div class="metric-label" data-i18n="dewpoint">Dew point</div>
+            <div class="metric-value" id="dewpoint">{{ '%.1f'|format(data.dewpoint) if data and data.dewpoint is not none else '—' }}°</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-label" data-i18n="feelslike">Feels like</div>
+            <div class="metric-value" id="feels-like">{{ '%.0f'|format(data.heatindex if data.heatindex is not none else data.windchill) if data and (data.heatindex is not none or data.windchill is not none) else '—' }}°</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pressure -->
+      <div class="card card-pressure">
+        <div class="card-label" data-i18n="pressure">PRESSURE</div>
+        <div class="metric-big" id="pressure">{{ '%.1f'|format(data.sealevelpressure) if data and data.sealevelpressure is not none else '—' }} <span class="unit">hPa</span></div>
+        <div class="pressure-trend" id="pressure-trend">
+          {% if data and data.pressuretrend is not none %}
+            {% if data.pressuretrend > 0 %}↑ <span data-i18n="rising">Rising</span>{% elif data.pressuretrend < 0 %}↓ <span data-i18n="falling">Falling</span>{% else %}→ <span data-i18n="steady">Steady</span>{% endif %}
+          {% else %}—{% endif %}
+        </div>
+      </div>
+
+      <!-- UV & Solar -->
+      <div class="card card-uv">
+        <div class="card-label" data-i18n="uvsolar">UV &amp; SOLAR</div>
+        <div class="uv-bar-wrap">
+          <div class="uv-bar">
+            <div class="uv-fill" id="uv-fill" style="width: {{ [((data.uv / 11 * 100)|round(0)), 100]|min if data and data.uv is not none else 0 }}%"></div>
+          </div>
+          <div class="uv-scale">
+            <span>0</span><span>3</span><span>6</span><span>9</span><span>11+</span>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-item">
+            <div class="metric-label" data-i18n="uvindex">UV Index</div>
+            <div class="metric-value" id="uv-val">{{ '%.1f'|format(data.uv) if data and data.uv is not none else '—' }}</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-label" data-i18n="uvmax">UV Max today</div>
+            <div class="metric-value" id="uv-max">{{ '%.1f'|format(data.uvdaymax) if data and data.uvdaymax is not none else '—' }}</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-item">
+            <div class="metric-label" data-i18n="solarrad">Solar Rad</div>
+            <div class="metric-value" id="solar">{{ '%.0f'|format(data.solarrad) if data and data.solarrad is not none else '—' }} W/m²</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-label" data-i18n="solarmax">Solar Max</div>
+            <div class="metric-value" id="solar-max">{{ '%.0f'|format(data.solarraddaymax) if data and data.solarraddaymax is not none else '—' }} W/m²</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Air Quality -->
+      <div class="card card-air">
+        <div class="card-label" data-i18n="airquality">AIR QUALITY</div>
+        <div class="aqi-row">
+          <div class="aqi-item">
+            <div class="aqi-label">PM1</div>
+            <div class="aqi-value" id="pm1">{{ '%.1f'|format(data.pm1) if data and data.pm1 is not none else '—' }}</div>
+            <div class="aqi-unit">µg/m³</div>
+          </div>
+          <div class="aqi-item">
+            <div class="aqi-label">PM2.5</div>
+            <div class="aqi-value" id="pm25">{{ '%.1f'|format(data.pm25) if data and data.pm25 is not none else '—' }}</div>
+            <div class="aqi-unit">µg/m³</div>
+          </div>
+          <div class="aqi-item">
+            <div class="aqi-label">PM10</div>
+            <div class="aqi-value" id="pm10">{{ '%.1f'|format(data.pm10) if data and data.pm10 is not none else '—' }}</div>
+            <div class="aqi-unit">µg/m³</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Temperature detail -->
+      <div class="card card-temp-detail">
+        <div class="card-label" data-i18n="temperature">TEMPERATURE</div>
+        <div class="metric-row">
+          <div class="metric-item">
+            <div class="metric-label" data-i18n="avg15">15 min avg</div>
+            <div class="metric-value" id="temp15">{{ '%.1f'|format(data.temp15min) if data and data.temp15min is not none else '—' }}°</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-label" data-i18n="windchill">Wind chill</div>
+            <div class="metric-value" id="windchill">{{ '%.1f'|format(data.windchill) if data and data.windchill is not none else '—' }}°</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-label" data-i18n="heatindex">Heat index</div>
+            <div class="metric-value" id="heatindex">{{ '%.1f'|format(data.heatindex) if data and data.heatindex is not none else '—' }}°</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-item">
+            <div class="metric-label" data-i18n="elevation">Elevation</div>
+            <div class="metric-value">{{ data.elevation if data and data.elevation is not none else '—' }} m</div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/weather.js') }}"></script>
+</body>
+</html>
