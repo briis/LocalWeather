@@ -285,6 +285,45 @@ body {
 }
 
 /* ── Air quality ────────────────────────────────────── */
+.aqi-bar-wrap { margin-bottom: 14px; }
+
+.aqi-gradient-bar {
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(to right, #00E400, #FFFF00, #FF7E00, #FF0000, #8F3F97, #7E0023);
+  position: relative;
+}
+
+.aqi-dot {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 0 4px rgba(0,0,0,0.5);
+  transition: left 0.6s ease;
+}
+
+.aqi-summary {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.aqi-number {
+  font-size: 2rem;
+  font-weight: 200;
+  line-height: 1;
+}
+
+.aqi-category {
+  font-size: 0.85rem;
+  font-weight: 400;
+}
+
 .aqi-row {
   display: flex;
   justify-content: space-around;

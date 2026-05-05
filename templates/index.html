@@ -202,6 +202,18 @@
       <!-- Air Quality -->
       <div class="card card-air">
         <div class="card-label" data-i18n="airquality">AIR QUALITY</div>
+
+        <!-- AQI bar -->
+        <div class="aqi-bar-wrap">
+          <div class="aqi-gradient-bar">
+            <div class="aqi-dot" id="aqi-dot" style="left:{{ aqi.percent if aqi else 0 }}%"></div>
+          </div>
+          <div class="aqi-summary">
+            <span class="aqi-number" id="aqi-number">{{ aqi.aqi if aqi else '—' }}</span>
+            <span class="aqi-category" id="aqi-category" style="color:{{ aqi.color if aqi else 'inherit' }}">{{ aqi.category if aqi else '' }}</span>
+          </div>
+        </div>
+
         <div class="aqi-row">
           <div class="aqi-item">
             <div class="aqi-label">PM1</div>

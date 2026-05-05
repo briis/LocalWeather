@@ -1,6 +1,6 @@
 // cSpell:words uvsolar airquality dewpoint feelslike uvindex uvmax solarrad solarmax heatindex windbearing windgust windspeedavg tempmax tempmin pressuretrend raintoday rainyesterday solarraddaymax uvdaymax temp15min windchill
 // cSpell:words VIND REGN FUGTIGHED LUFTTRYK LUFTKVALITET TEMPERATUR Vindstød Dugpunkt Føles Stigende Faldende Stabilt indeks maks Solstråling Vindafkøling Varmeindeks Højde Opdateret NNØ NØ ØNØ ØSØ SSØ SSV VSV VNV
-// cSpell:words TIMEPROGNOSER DAGES Prognose gmin gmax
+// cSpell:words TIMEPROGNOSER DAGES Prognose gmin gmax Moderat Usund følsomme Meget Farlig
 const REFRESH_INTERVAL = 60000;
 
 // ── Translations ────────────────────────────────────────────────────────────
@@ -38,6 +38,14 @@ const translations = {
     now:            'Now',
     today_short:    'Today',
     dir_n: 'N', dir_e: 'E', dir_s: 'S', dir_w: 'W',
+    aqi_categories: {
+      'Good':                          'God',
+      'Moderate':                      'Moderat',
+      'Unhealthy for Sensitive Groups':'Usund for følsomme grupper',
+      'Unhealthy':                     'Usund',
+      'Very Unhealthy':                'Meget usund',
+      'Hazardous':                     'Farlig',
+    },
   },
   da: {
     wind:           'VIND',
@@ -72,6 +80,14 @@ const translations = {
     now:            'Nu',
     today_short:    'I dag',
     dir_n: 'N', dir_e: 'Ø', dir_s: 'S', dir_w: 'V',
+    aqi_categories: {
+      'Good':                          'God',
+      'Moderate':                      'Moderat',
+      'Unhealthy for Sensitive Groups':'Usund for følsomme grupper',
+      'Unhealthy':                     'Usund',
+      'Very Unhealthy':                'Meget usund',
+      'Hazardous':                     'Farlig',
+    },
   },
 };
 
@@ -282,6 +298,18 @@ function updatePage(d) {
   setEl('pm1', fmt(d.pm1));
   setEl('pm25', fmt(d.pm25));
   setEl('pm10', fmt(d.pm10));
+
+  if (d.aqi) {
+    const dot = document.getElementById('aqi-dot');
+    if (dot) dot.style.left = `${d.aqi.percent}%`;
+    setEl('aqi-number', d.aqi.aqi);
+    const catEl = document.getElementById('aqi-category');
+    if (catEl) {
+      const cats = translations[currentLang].aqi_categories;
+      catEl.textContent = cats[d.aqi.category] ?? d.aqi.category;
+      catEl.style.color = d.aqi.color;
+    }
+  }
 
   setEl('temp15', d.temp15min != null ? `${fmt(d.temp15min)}°` : '—');
   setEl('windchill', d.windchill != null ? `${fmt(d.windchill)}°` : '—');

@@ -1,6 +1,7 @@
 from flask import Flask, render_template, jsonify
 import mysql.connector
 from mysql.connector import Error
+from aqi_calculator import calculate_aqi
 
 app = Flask(__name__)
 
@@ -70,6 +71,21 @@ def wind_direction(degrees):
     return dirs[round(degrees / 22.5) % 16]
 
 
+def calc_aqi(data):
+    if not data:
+        return None
+    result = calculate_aqi(pm25=data.get('pm25'), pm10=data.get('pm10'))
+    if result is None:
+        return None
+    return {
+        'aqi':      result.aqi,
+        'category': result.category,
+        'color':    result.color,
+        'pollutant': result.pollutant,
+        'percent':  round(min(result.aqi / 500 * 100, 100), 1),
+    }
+
+
 def calc_bars(daily):
     temps = [d[f] for d in daily for f in ('temperature', 'temp_low') if d.get(f) is not None]
     gmin = min(temps) if temps else 0
@@ -93,9 +109,10 @@ def index():
     daily   = get_daily_forecast()
     direction = wind_direction(data.get('windbearing') if data else None)
     bars    = calc_bars(daily)
+    aqi = calc_aqi(data)
     return render_template('index.html',
         data=data, wind_dir=direction,
-        hourly=hourly, daily=daily, bars=bars)
+        hourly=hourly, daily=daily, bars=bars, aqi=aqi)
 
 
 @app.route('/api/data')
@@ -104,7 +121,11 @@ def api_data():
     if data is None:
         return jsonify({'error': 'No data'}), 503
     data['wind_dir_label'] = wind_direction(data.get('windbearing'))
-    return jsonify(serialize(data))
+    aqi = calc_aqi(data)
+    row = serialize(data)
+    if aqi:
+        row['aqi'] = aqi
+    return jsonify(row)
 
 @app.route('/api/hourly')
 def api_hourly():
