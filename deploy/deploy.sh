@@ -66,7 +66,7 @@ ln -sf /etc/nginx/sites-available/localweather /etc/nginx/sites-enabled/localwea
 rm -f /etc/nginx/sites-enabled/default
 nginx -t
 systemctl enable nginx
-systemctl reload nginx
+systemctl restart nginx
 
 echo ""
 echo "==> Done. App is running at http://$(hostname -I | awk '{print $1}')"
