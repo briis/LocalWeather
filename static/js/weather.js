@@ -209,8 +209,15 @@ function buildHourlyStrip(hours) {
   const container = document.getElementById('hourly-scroll');
   if (!container || !hours.length) return;
   const t = translations[currentLang];
+
+  const now = new Date();
+  let nowIndex = 0;
+  hours.forEach((h, i) => {
+    if (h.datetime && new Date(h.datetime) <= now) nowIndex = i;
+  });
+
   container.innerHTML = hours.map((h, i) => {
-    const time = i === 0
+    const time = i === nowIndex
       ? `<span data-i18n="now">${t.now}</span>`
       : fmtHour(h.datetime);
     const precip = (h.precipitation_probability > 20)
@@ -224,6 +231,11 @@ function buildHourlyStrip(hours) {
         <div class="hour-temp">${h.temperature != null ? Math.round(h.temperature) : '—'}°</div>
       </div>`;
   }).join('');
+
+  requestAnimationFrame(() => {
+    const nowItem = container.querySelectorAll('.hour-item')[nowIndex];
+    if (nowItem) container.scrollLeft = nowItem.offsetLeft;
+  });
 }
 
 function buildDailyForecast(days) {
@@ -395,4 +407,14 @@ document.getElementById('lang-toggle').addEventListener('click', () => {
 applyTranslations(currentLang);
 fetchAndUpdate();
 updateSunDot();
+
+// Scroll the server-rendered hourly strip to "Now" immediately on load
+(function () {
+  const scroll = document.getElementById('hourly-scroll');
+  if (!scroll) return;
+  const idx   = parseInt(scroll.dataset.nowIndex || '0', 10);
+  const items = scroll.querySelectorAll('.hour-item');
+  if (items[idx]) scroll.scrollLeft = items[idx].offsetLeft;
+})();
+
 setInterval(fetchAndUpdate, REFRESH_INTERVAL);

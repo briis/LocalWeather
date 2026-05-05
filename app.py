@@ -191,10 +191,18 @@ def index():
     aqi     = calc_aqi(data)
     sun     = get_sun_data()
     moon    = get_moon_data()
+    now_local = datetime.now()
+    now_index = 0
+    for i, h in enumerate(hourly):
+        dt = h.get('datetime')
+        if dt is not None and dt <= now_local:
+            now_index = i
+        elif dt is not None:
+            break
     return render_template('index.html',
         data=data, wind_dir=direction,
         hourly=hourly, daily=daily, bars=bars, aqi=aqi,
-        sun=sun, moon=moon)
+        sun=sun, moon=moon, now_index=now_index)
 
 
 @app.route('/api/data')

@@ -56,10 +56,10 @@
     <section class="hourly-section">
       <div class="card card-hourly">
         <div class="card-label" data-i18n="hourly">HOURLY FORECAST</div>
-        <div class="hourly-scroll" id="hourly-scroll">
+        <div class="hourly-scroll" id="hourly-scroll" data-now-index="{{ now_index }}">
           {% for h in hourly %}
           <div class="hour-item">
-            <div class="hour-time">{% if loop.first %}<span data-i18n="now">Now</span>{% else %}{{ h.datetime.strftime('%H') if h.datetime else '—' }}{% endif %}</div>
+            <div class="hour-time">{% if loop.index0 == now_index %}<span data-i18n="now">Now</span>{% else %}{{ h.datetime.strftime('%H') if h.datetime else '—' }}{% endif %}</div>
             <div class="hour-precip">{% if h.precipitation_probability and h.precipitation_probability > 20 %}{{ h.precipitation_probability }}%{% endif %}</div>
             <div class="hour-icon"><img class="wi wi-sm" src="/static/images/{{ h.icon | weather_icon }}" alt="{{ h.icon or '' }}" onerror="this.src='/static/images/not-available.png'"></div>
             <div class="hour-temp">{{ '%.0f'|format(h.temperature) if h.temperature is not none else '—' }}°</div>
