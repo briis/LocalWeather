@@ -1,5 +1,5 @@
 // cSpell:words uvsolar airquality dewpoint feelslike uvindex uvmax solarrad solarmax heatindex windbearing windgust windspeedavg tempmax tempmin pressuretrend raintoday rainyesterday solarraddaymax uvdaymax temp15min windchill
-// cSpell:words VIND REGN FUGTIGHED LUFTTRYK LUFTKVALITET TEMPERATUR Vindstød Dugpunkt Føles Stigende Faldende Stabilt indeks maks Solstråling Vindafkøling Varmeindeks Højde Opdateret
+// cSpell:words VIND REGN FUGTIGHED LUFTTRYK LUFTKVALITET TEMPERATUR Vindstød Dugpunkt Føles Stigende Faldende Stabilt indeks maks Solstråling Vindafkøling Varmeindeks Højde Opdateret NNØ NØ ØNØ ØSØ SSØ SSV VSV VNV
 const REFRESH_INTERVAL = 60000;
 
 // ── Translations ────────────────────────────────────────────────────────────
@@ -32,6 +32,7 @@ const translations = {
     heatindex:   'Heat index',
     elevation:   'Elevation',
     updated:     'Updated',
+    dir_n: 'N', dir_e: 'E', dir_s: 'S', dir_w: 'W',
   },
   da: {
     wind:        'VIND',
@@ -61,6 +62,7 @@ const translations = {
     heatindex:   'Varmeindeks',
     elevation:   'Højde',
     updated:     'Opdateret',
+    dir_n: 'N', dir_e: 'Ø', dir_s: 'S', dir_w: 'V',
   },
 };
 
@@ -87,10 +89,14 @@ function updateTimestamp() {
 }
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
+const windDirs = {
+  en: ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'],
+  da: ['N','NNØ','NØ','ØNØ','Ø','ØSØ','SØ','SSØ','S','SSV','SV','VSV','V','VNV','NV','NNV'],
+};
+
 function windDir(deg) {
   if (deg == null) return '—';
-  const dirs = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
-  return dirs[Math.round(deg / 22.5) % 16];
+  return windDirs[currentLang][Math.round(deg / 22.5) % 16];
 }
 
 function fmt(val, decimals = 1) {

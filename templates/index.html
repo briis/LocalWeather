@@ -38,10 +38,10 @@
         <div class="card-label" data-i18n="wind">WIND</div>
         <div class="wind-compass">
           <div class="compass-ring">
-            <span class="compass-pt n">N</span>
-            <span class="compass-pt e">E</span>
-            <span class="compass-pt s">S</span>
-            <span class="compass-pt w">W</span>
+            <span class="compass-pt n" data-i18n="dir_n">N</span>
+            <span class="compass-pt e" data-i18n="dir_e">E</span>
+            <span class="compass-pt s" data-i18n="dir_s">S</span>
+            <span class="compass-pt w" data-i18n="dir_w">W</span>
             <div class="compass-needle" id="compass-needle" style="transform: rotate({{ data.windbearing if data and data.windbearing is not none else 0 }}deg)"></div>
           </div>
         </div>
