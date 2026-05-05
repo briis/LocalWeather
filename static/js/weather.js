@@ -210,18 +210,18 @@ function buildDailyForecast(days) {
   if (!container || !days.length) return;
   const t = translations[currentLang];
 
-  const temps = days.flatMap(d => [d.temperature, d.temp_low].filter(v => v != null));
+  const slice = days.slice(0, 14);
+  const temps = slice.flatMap(d => [d.temperature, d.temp_low].filter(v => v != null));
   const gmin = Math.min(...temps);
   const gmax = Math.max(...temps);
   const span = gmax - gmin || 1;
 
-  const label = container.querySelector('.card-label');
-  const rows = days.map((d, i) => {
-    const lo   = d.temp_low ?? gmin;
-    const hi   = d.temperature ?? gmin;
+  const rows = slice.map((d, i) => {
+    const lo    = d.temp_low ?? gmin;
+    const hi    = d.temperature ?? gmin;
     const left  = Math.max(0, (lo - gmin) / span * 100).toFixed(1);
     const width = Math.max(2, (hi - lo)   / span * 100).toFixed(1);
-    const divider = i < days.length - 1 ? '<div class="daily-divider"></div>' : '';
+    const divider = i < slice.length - 1 ? '<div class="daily-divider"></div>' : '';
     return `
       <div class="daily-row">
         <div class="daily-day">${fmtDay(d.datetime, i)}</div>
@@ -236,7 +236,7 @@ function buildDailyForecast(days) {
 
   container.innerHTML = `
     <div class="card-label" data-i18n="daily_forecast">${t.daily_forecast}</div>
-    ${rows}`;
+    <div class="daily-scroll-v">${rows}</div>`;
 }
 
 // ── Realtime data update ─────────────────────────────────────────────────────

@@ -109,7 +109,7 @@ def index():
     daily   = get_daily_forecast()
     direction = wind_direction(data.get('windbearing') if data else None)
     bars    = calc_bars(daily)
-    aqi = calc_aqi(data)
+    aqi     = calc_aqi(data)
     return render_template('index.html',
         data=data, wind_dir=direction,
         hourly=hourly, daily=daily, bars=bars, aqi=aqi)

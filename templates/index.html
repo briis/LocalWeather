@@ -77,20 +77,22 @@
       {% if daily %}
       <div class="card card-daily" id="daily-forecast">
         <div class="card-label" data-i18n="daily_forecast">14-DAY FORECAST</div>
-        {% for d in daily %}
-        <div class="daily-row">
-          <div class="daily-day">
-            {% if loop.first %}<span data-i18n="today_short">Today</span>{% else %}{{ d.datetime.strftime('%a') if d.datetime else '—' }}{% endif %}
+        <div class="daily-scroll-v">
+          {% for d in daily %}
+          <div class="daily-row">
+            <div class="daily-day">
+              {% if loop.first %}<span data-i18n="today_short">Today</span>{% else %}{{ d.datetime.strftime('%a') if d.datetime else '—' }}{% endif %}
+            </div>
+            <div class="daily-icon"><img class="wi wi-sm" src="/static/images/{{ d.icon | weather_icon }}" alt="{{ d.icon or '' }}" onerror="this.src='/static/images/not-available.png'"></div>
+            <div class="daily-low">{{ '%.0f'|format(d.temp_low) if d.temp_low is not none else '—' }}°</div>
+            <div class="daily-bar-bg">
+              <div class="daily-bar-fill" style="left:{{ bars[loop.index0].left }}%;width:{{ bars[loop.index0].width }}%"></div>
+            </div>
+            <div class="daily-high">{{ '%.0f'|format(d.temperature) if d.temperature is not none else '—' }}°</div>
           </div>
-          <div class="daily-icon"><img class="wi wi-sm" src="/static/images/{{ d.icon | weather_icon }}" alt="{{ d.icon or '' }}" onerror="this.src='/static/images/not-available.png'"></div>
-          <div class="daily-low">{{ '%.0f'|format(d.temp_low) if d.temp_low is not none else '—' }}°</div>
-          <div class="daily-bar-bg">
-            <div class="daily-bar-fill" style="left:{{ bars[loop.index0].left }}%;width:{{ bars[loop.index0].width }}%"></div>
-          </div>
-          <div class="daily-high">{{ '%.0f'|format(d.temperature) if d.temperature is not none else '—' }}°</div>
+          {% if not loop.last %}<div class="daily-divider"></div>{% endif %}
+          {% endfor %}
         </div>
-        {% if not loop.last %}<div class="daily-divider"></div>{% endif %}
-        {% endfor %}
       </div>
       {% endif %}
 

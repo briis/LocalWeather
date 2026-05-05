@@ -401,6 +401,13 @@ body {
 /* ── Daily forecast ──────────────────────────────────── */
 .card-daily { grid-column: 1 / -1; }
 
+.daily-scroll-v {
+  overflow-y: auto;
+  max-height: 240px;
+  scrollbar-width: none;
+}
+.daily-scroll-v::-webkit-scrollbar { display: none; }
+
 .daily-row {
   display: flex;
   align-items: center;
