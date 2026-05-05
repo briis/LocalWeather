@@ -38,14 +38,6 @@ const translations = {
     now:            'Now',
     today_short:    'Today',
     dir_n: 'N', dir_e: 'E', dir_s: 'S', dir_w: 'W',
-    aqi_categories: {
-      'Good':                          'God',
-      'Moderate':                      'Moderat',
-      'Unhealthy for Sensitive Groups':'Usund for følsomme grupper',
-      'Unhealthy':                     'Usund',
-      'Very Unhealthy':                'Meget usund',
-      'Hazardous':                     'Farlig',
-    },
   },
   da: {
     wind:           'VIND',
@@ -290,6 +282,8 @@ function updatePage(d) {
 
   const uvFill = document.getElementById('uv-fill');
   if (uvFill) uvFill.style.width = `${uvMaskWidth(d.uv)}%`;
+  const uvDot = document.getElementById('uv-dot');
+  if (uvDot) uvDot.style.left = `${d.uv != null ? Math.min(d.uv / 11 * 100, 100) : 0}%`;
   setEl('uv-val', fmt(d.uv));
   setEl('uv-max', fmt(d.uvdaymax));
   setEl('solar', d.solarrad != null ? `${fmtInt(d.solarrad)} W/m²` : '—');
@@ -306,7 +300,7 @@ function updatePage(d) {
     const catEl = document.getElementById('aqi-category');
     if (catEl) {
       const cats = translations[currentLang].aqi_categories;
-      catEl.textContent = cats[d.aqi.category] ?? d.aqi.category;
+      catEl.textContent = cats?.[d.aqi.category] ?? d.aqi.category;
       catEl.style.color = d.aqi.color;
     }
   }
@@ -344,4 +338,5 @@ document.getElementById('lang-toggle').addEventListener('click', () => {
 });
 
 applyTranslations(currentLang);
+fetchAndUpdate();
 setInterval(fetchAndUpdate, REFRESH_INTERVAL);

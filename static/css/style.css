@@ -266,7 +266,18 @@ body {
   border-radius: 4px;
   background: linear-gradient(to right, #4fc3f7, #66bb6a, #ffca28, #ef5350, #7b1fa2);
   position: relative;
-  overflow: hidden;
+}
+
+.uv-dot {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 0 4px rgba(0,0,0,0.5);
+  transition: left 0.6s ease;
 }
 
 .uv-fill {

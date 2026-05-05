@@ -16,6 +16,7 @@
   <link rel="apple-touch-icon" href="/static/images/partly-cloudy-day.png" />
 
   <!-- Android / PWA -->
+  <meta name="mobile-web-app-capable" content="yes" />
   <meta name="theme-color" content="#0d2444" />
   <link rel="manifest" href="/static/manifest.json" />
 
@@ -172,6 +173,7 @@
         <div class="uv-bar-wrap">
           <div class="uv-bar">
             <div class="uv-fill" id="uv-fill" style="width: {{ [((data.uv / 11 * 100)|round(0)), 100]|min if data and data.uv is not none else 0 }}%"></div>
+            <div class="uv-dot" id="uv-dot" style="left: {{ [(data.uv / 11 * 100)|round(0), 100]|min if data and data.uv is not none else 0 }}%"></div>
           </div>
           <div class="uv-scale">
             <span>0</span><span>3</span><span>6</span><span>9</span><span>11+</span>
