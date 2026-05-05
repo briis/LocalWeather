@@ -84,7 +84,7 @@ const translations = {
 };
 
 // ── Language state ──────────────────────────────────────────────────────────
-let currentLang = localStorage.getItem('lang') || 'en';
+let currentLang = localStorage.getItem('lang') || 'da';
 
 function applyTranslations(lang) {
   const t = translations[lang];
