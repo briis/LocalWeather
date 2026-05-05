@@ -203,6 +203,41 @@
         </div>
       </div>
 
+      <!-- Sunrise / Sunset -->
+      {% if sun %}
+      <div class="card card-sun">
+        <div class="card-label" data-i18n="sunrise_sunset">SUNRISE &amp; SUNSET</div>
+        <svg class="sun-arc-svg" viewBox="0 0 200 88"
+             data-sunrise="{{ sun.sunrise }}" data-sunset="{{ sun.sunset }}">
+          <line x1="5" y1="68" x2="195" y2="68" class="sun-horizon"/>
+          <path d="M 10,68 Q 100,8 190,68" class="sun-arc-path"/>
+          <circle class="sun-dot" id="sun-dot" cx="100" cy="8" r="6"/>
+          <text x="10"  y="82" class="sun-time-label">{{ sun.sunrise }}</text>
+          <text x="190" y="82" class="sun-time-label" text-anchor="end">{{ sun.sunset }}</text>
+        </svg>
+      </div>
+      {% endif %}
+
+      <!-- Moon -->
+      {% if moon %}
+      <div class="card card-moon">
+        <div class="card-label" id="moon-phase-label">{{ moon.phase }}</div>
+        <div class="moon-main">
+          {{ moon.svg | safe }}
+          <div class="moon-stats">
+            <div class="metric-item">
+              <div class="metric-label" data-i18n="illumination">Illumination</div>
+              <div class="metric-value" id="moon-illumination">{{ moon.illumination }}%</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-label" data-i18n="next_full_moon">Next full moon</div>
+              <div class="metric-value" id="moon-days-to-full">{{ moon.days_to_full }} <span data-i18n="days">days</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
       <!-- Air Quality -->
       <div class="card card-air">
         <div class="card-label" data-i18n="airquality">AIR QUALITY</div>

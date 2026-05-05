@@ -295,6 +295,50 @@ body {
   margin-top: 4px;
 }
 
+/* ── Sunrise / Sunset ────────────────────────────────── */
+.sun-arc-svg {
+  width: 100%;
+  overflow: visible;
+  margin-top: 4px;
+}
+
+.sun-arc-path {
+  fill: none;
+  stroke: rgba(255,255,255,0.3);
+  stroke-width: 2;
+  stroke-dasharray: 5 4;
+}
+
+.sun-horizon {
+  stroke: rgba(255,255,255,0.2);
+  stroke-width: 1;
+}
+
+.sun-dot {
+  fill: #FFD60A;
+  filter: drop-shadow(0 0 5px #FFD60A88);
+}
+
+.sun-time-label {
+  fill: var(--text-dim);
+  font-size: 11px;
+  font-family: inherit;
+}
+
+/* ── Moon ────────────────────────────────────────────── */
+.moon-main {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-top: 4px;
+}
+
+.moon-svg { width: 72px; height: 72px; flex-shrink: 0; }
+.moon-shadow { fill: rgba(255,255,255,0.08); }
+.moon-lit    { fill: rgba(255,255,255,0.88); }
+
+.moon-stats { display: flex; flex-direction: column; gap: 12px; }
+
 /* ── Air quality ────────────────────────────────────── */
 .aqi-bar-wrap { margin-bottom: 14px; }
 

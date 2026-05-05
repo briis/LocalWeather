@@ -1,6 +1,7 @@
 // cSpell:words uvsolar airquality dewpoint feelslike uvindex uvmax solarrad solarmax heatindex windbearing windgust windspeedavg tempmax tempmin pressuretrend raintoday rainyesterday solarraddaymax uvdaymax temp15min windchill
 // cSpell:words VIND REGN FUGTIGHED LUFTTRYK LUFTKVALITET TEMPERATUR Vindstød Dugpunkt Føles Stigende Faldende Stabilt indeks maks Solstråling Vindafkøling Varmeindeks Højde Opdateret NNØ NØ ØNØ ØSØ SSØ SSV VSV VNV
 // cSpell:words TIMEPROGNOSER DAGES Prognose gmin gmax Moderat Usund følsomme Meget Farlig
+// cSpell:words Nymåne Fuldmåne Halvmåne Voksende Aftagende Belysning fuldmåne dage Gibbous Kvartal SOLNEDGANG SOLDATA
 const REFRESH_INTERVAL = 60000;
 
 // ── Translations ────────────────────────────────────────────────────────────
@@ -38,6 +39,16 @@ const translations = {
     now:            'Now',
     today_short:    'Today',
     dir_n: 'N', dir_e: 'E', dir_s: 'S', dir_w: 'W',
+    sunrise_sunset: 'SUNRISE & SUNSET',
+    illumination:   'Illumination',
+    next_full_moon: 'Next full moon',
+    days:           'days',
+    moon_phases: {
+      'New Moon':       'New Moon',       'Waxing Crescent': 'Waxing Crescent',
+      'First Quarter':  'First Quarter',  'Waxing Gibbous':  'Waxing Gibbous',
+      'Full Moon':      'Full Moon',      'Waning Gibbous':  'Waning Gibbous',
+      'Last Quarter':   'Last Quarter',   'Waning Crescent': 'Waning Crescent',
+    },
   },
   da: {
     wind:           'VIND',
@@ -72,6 +83,16 @@ const translations = {
     now:            'Nu',
     today_short:    'I dag',
     dir_n: 'N', dir_e: 'Ø', dir_s: 'S', dir_w: 'V',
+    sunrise_sunset: 'SOL OP & NED',
+    illumination:   'Belysning',
+    next_full_moon: 'Næste fuldmåne',
+    days:           'dage',
+    moon_phases: {
+      'New Moon':       'Nymåne',           'Waxing Crescent': 'Voksende halvmåne',
+      'First Quarter':  'Første kvartal',   'Waxing Gibbous':  'Voksende gibbous',
+      'Full Moon':      'Fuldmåne',         'Waning Gibbous':  'Aftagende gibbous',
+      'Last Quarter':   'Sidste kvartal',   'Waning Crescent': 'Aftagende halvmåne',
+    },
     aqi_categories: {
       'Good':                          'God',
       'Moderate':                      'Moderat',
@@ -239,6 +260,26 @@ function buildDailyForecast(days) {
     <div class="daily-scroll-v">${rows}</div>`;
 }
 
+// ── Sun arc ──────────────────────────────────────────────────────────────────
+function updateSunDot() {
+  const svg = document.querySelector('.sun-arc-svg');
+  const dot = document.getElementById('sun-dot');
+  if (!svg || !dot) return;
+  const [rh, rm] = (svg.dataset.sunrise || '06:00').split(':').map(Number);
+  const [sh, sm] = (svg.dataset.sunset  || '20:00').split(':').map(Number);
+  const now        = new Date();
+  const nowMin     = now.getHours() * 60 + now.getMinutes();
+  const sunriseMin = rh * 60 + rm;
+  const sunsetMin  = sh * 60 + sm;
+  let t = nowMin <= sunriseMin ? 0 : nowMin >= sunsetMin ? 1
+        : (nowMin - sunriseMin) / (sunsetMin - sunriseMin);
+  // Quadratic bezier P0=(10,68) P1=(100,8) P2=(190,68)
+  const cx = (1-t)**2 * 10 + 2*t*(1-t) * 100 + t**2 * 190;
+  const cy = (1-t)**2 * 68 + 2*t*(1-t) * 8   + t**2 * 68;
+  dot.setAttribute('cx', cx.toFixed(1));
+  dot.setAttribute('cy', cy.toFixed(1));
+}
+
 // ── Realtime data update ─────────────────────────────────────────────────────
 function updatePage(d) {
   const heroIcon = document.getElementById('hero-icon');
@@ -305,6 +346,20 @@ function updatePage(d) {
     }
   }
 
+  if (d.sun) {
+    const svg = document.querySelector('.sun-arc-svg');
+    if (svg) { svg.dataset.sunrise = d.sun.sunrise; svg.dataset.sunset = d.sun.sunset; }
+    updateSunDot();
+  }
+
+  if (d.moon) {
+    const t = translations[currentLang];
+    const phaseEl = document.getElementById('moon-phase-label');
+    if (phaseEl) phaseEl.textContent = t.moon_phases?.[d.moon.phase] ?? d.moon.phase;
+    setEl('moon-illumination', `${d.moon.illumination}%`);
+    setEl('moon-days-to-full', `${d.moon.days_to_full} ${t.days}`);
+  }
+
   setEl('temp15', d.temp15min != null ? `${fmt(d.temp15min)}°` : '—');
   setEl('windchill', d.windchill != null ? `${fmt(d.windchill)}°` : '—');
   setEl('heatindex', d.heatindex != null ? `${fmt(d.heatindex)}°` : '—');
@@ -339,4 +394,5 @@ document.getElementById('lang-toggle').addEventListener('click', () => {
 
 applyTranslations(currentLang);
 fetchAndUpdate();
+updateSunDot();
 setInterval(fetchAndUpdate, REFRESH_INTERVAL);
