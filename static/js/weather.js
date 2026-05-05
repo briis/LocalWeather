@@ -272,6 +272,29 @@ function buildDailyForecast(days) {
     <div class="daily-scroll-v">${rows}</div>`;
 }
 
+// ── Apply server-rendered data attributes as styles (avoids Jinja/CSS linting conflicts) ──
+function initStyles() {
+  const needle = document.getElementById('compass-needle');
+  if (needle) needle.style.transform = `rotate(${needle.dataset.bearing || 0}deg)`;
+
+  const uvFill = document.getElementById('uv-fill');
+  if (uvFill) uvFill.style.width = `${uvFill.dataset.width || 0}%`;
+
+  const uvDot = document.getElementById('uv-dot');
+  if (uvDot) uvDot.style.left = `${uvDot.dataset.left || 0}%`;
+
+  const aqiDot = document.getElementById('aqi-dot');
+  if (aqiDot) aqiDot.style.left = `${aqiDot.dataset.left || 0}%`;
+
+  const aqiCat = document.getElementById('aqi-category');
+  if (aqiCat?.dataset.color) aqiCat.style.color = aqiCat.dataset.color;
+
+  document.querySelectorAll('.daily-bar-fill').forEach(el => {
+    if (el.dataset.left  != null) el.style.left  = `${el.dataset.left}%`;
+    if (el.dataset.width != null) el.style.width = `${el.dataset.width}%`;
+  });
+}
+
 // ── Sun arc ──────────────────────────────────────────────────────────────────
 function updateSunDot() {
   const svg = document.querySelector('.sun-arc-svg');
@@ -405,6 +428,7 @@ document.getElementById('lang-toggle').addEventListener('click', () => {
 });
 
 applyTranslations(currentLang);
+initStyles();
 fetchAndUpdate();
 updateSunDot();
 

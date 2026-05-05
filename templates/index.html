@@ -86,7 +86,7 @@
             <div class="daily-icon"><img class="wi wi-sm" src="/static/images/{{ d.icon | weather_icon }}" alt="{{ d.icon or '' }}" onerror="this.src='/static/images/not-available.png'"></div>
             <div class="daily-low">{{ '%.0f'|format(d.temp_low) if d.temp_low is not none else '—' }}°</div>
             <div class="daily-bar-bg">
-              <div class="daily-bar-fill" style="left:{{ bars[loop.index0].left }}%;width:{{ bars[loop.index0].width }}%"></div>
+              <div class="daily-bar-fill" data-left="{{ bars[loop.index0].left }}" data-width="{{ bars[loop.index0].width }}"></div>
             </div>
             <div class="daily-high">{{ '%.0f'|format(d.temperature) if d.temperature is not none else '—' }}°</div>
           </div>
@@ -105,7 +105,7 @@
             <span class="compass-pt e" data-i18n="dir_e">E</span>
             <span class="compass-pt s" data-i18n="dir_s">S</span>
             <span class="compass-pt w" data-i18n="dir_w">W</span>
-            <div class="compass-needle" id="compass-needle" style="transform: rotate({{ data.windbearing if data and data.windbearing is not none else 0 }}deg)"></div>
+            <div class="compass-needle" id="compass-needle" data-bearing="{{ data.windbearing if data and data.windbearing is not none else 0 }}"></div>
           </div>
         </div>
         <div class="wind-info">
@@ -174,8 +174,8 @@
         <div class="card-label" data-i18n="uvsolar">UV &amp; SOLAR</div>
         <div class="uv-bar-wrap">
           <div class="uv-bar">
-            <div class="uv-fill" id="uv-fill" style="width: {{ [((data.uv / 11 * 100)|round(0)), 100]|min if data and data.uv is not none else 0 }}%"></div>
-            <div class="uv-dot" id="uv-dot" style="left: {{ [(data.uv / 11 * 100)|round(0), 100]|min if data and data.uv is not none else 0 }}%"></div>
+            <div class="uv-fill" id="uv-fill" data-width="{{ [((data.uv / 11 * 100)|round(0)), 100]|min if data and data.uv is not none else 0 }}"></div>
+            <div class="uv-dot" id="uv-dot" data-left="{{ [(data.uv / 11 * 100)|round(0), 100]|min if data and data.uv is not none else 0 }}"></div>
           </div>
           <div class="uv-scale">
             <span>0</span><span>3</span><span>6</span><span>9</span><span>11+</span>
@@ -245,11 +245,11 @@
         <!-- AQI bar -->
         <div class="aqi-bar-wrap">
           <div class="aqi-gradient-bar">
-            <div class="aqi-dot" id="aqi-dot" style="left:{{ aqi.percent if aqi else 0 }}%"></div>
+            <div class="aqi-dot" id="aqi-dot" data-left="{{ aqi.percent if aqi else 0 }}"></div>
           </div>
           <div class="aqi-summary">
             <span class="aqi-number" id="aqi-number">{{ aqi.aqi if aqi else '—' }}</span>
-            <span class="aqi-category" id="aqi-category" style="color:{{ aqi.color if aqi else 'inherit' }}">{{ aqi.category if aqi else '' }}</span>
+            <span class="aqi-category" id="aqi-category" data-color="{{ aqi.color if aqi else '' }}">{{ aqi.category if aqi else '' }}</span>
           </div>
         </div>
 

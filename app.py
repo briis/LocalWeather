@@ -39,8 +39,10 @@ ICON_MAP = {
     'exceptional':     'extreme.png',
 }
 
+
 def weather_icon(name):
     return ICON_MAP.get(name or '', 'not-available.png')
+
 
 app.jinja_env.filters['weather_icon'] = weather_icon
 
@@ -57,11 +59,14 @@ def _query(sql, limit=None):
     except Error:
         return None if limit == 1 else []
 
+
 def get_weather_data():
     return _query("SELECT * FROM realtime_data ORDER BY ID DESC LIMIT 1", limit=1)
 
+
 def get_hourly_forecast():
     return _query("SELECT * FROM forecast_hourly ORDER BY hour_num ASC LIMIT 72")
+
 
 def get_daily_forecast():
     return _query("SELECT * FROM forecast_daily ORDER BY day_num ASC LIMIT 14")
@@ -154,7 +159,8 @@ def get_moon_data():
         elif phase_num < 23.99:                       name = 'Last Quarter'
         else:                                         name = 'Waning Crescent'
         illumination = round(50 * (1 - math.cos(2 * math.pi * phase_num / 29.53)))
-        days_to_full = math.ceil(14.77 - phase_num) if phase_num < 14.77 else math.ceil(29.53 - phase_num + 14.77)
+        days_to_full = (math.ceil(14.77 - phase_num) if phase_num < 14.77
+                        else math.ceil(29.53 - phase_num + 14.77))
         return {
             'phase':        name,
             'illumination': illumination,
@@ -166,7 +172,8 @@ def get_moon_data():
 
 
 def calc_bars(daily):
-    temps = [d[f] for d in daily for f in ('temperature', 'temp_low') if d.get(f) is not None]
+    temps = [d[f] for d in daily for f in ('temperature', 'temp_low')
+             if d.get(f) is not None]
     gmin = min(temps) if temps else 0
     gmax = max(temps) if temps else 30
     span = gmax - gmin or 1
