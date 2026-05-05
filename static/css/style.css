@@ -1,3 +1,4 @@
+/* cSpell:words precip */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
@@ -290,8 +291,114 @@ body {
 
 .aqi-unit { font-size: 0.65rem; color: var(--text-dim); }
 
+/* ── Hourly strip ────────────────────────────────────── */
+.hourly-section {
+  max-width: 1100px;
+  margin: 0 auto 14px;
+  padding: 0 16px;
+}
+
+.hourly-scroll {
+  display: flex;
+  gap: 2px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+.hourly-scroll::-webkit-scrollbar { display: none; }
+
+.hour-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  min-width: 54px;
+  padding: 4px 6px;
+  flex-shrink: 0;
+}
+
+.hour-time {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  font-weight: 500;
+}
+
+.hour-precip {
+  font-size: 0.65rem;
+  color: #5AC8FA;
+  font-weight: 600;
+  min-height: 0.9rem;
+  line-height: 1;
+}
+
+.hour-icon { font-size: 1.4rem; line-height: 1; }
+
+.hour-temp { font-size: 0.9rem; font-weight: 300; }
+
+/* ── Daily forecast ──────────────────────────────────── */
+.card-daily { grid-column: 1 / -1; }
+
+.daily-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0;
+}
+
+.daily-day {
+  width: 52px;
+  font-size: 1rem;
+  font-weight: 400;
+  flex-shrink: 0;
+}
+
+.daily-icon {
+  font-size: 1.3rem;
+  width: 28px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.daily-low {
+  width: 34px;
+  text-align: right;
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+
+.daily-bar-bg {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.15);
+  position: relative;
+  min-width: 60px;
+}
+
+.daily-bar-fill {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(to right, #5AC8FA, #66BB6A, #FFCA28, #FF9500);
+}
+
+.daily-high {
+  width: 34px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.daily-divider {
+  height: 1px;
+  background: var(--glass-border);
+}
+
 /* ── Responsive ─────────────────────────────────────── */
-@media (max-width: 500px) {
+@media (max-width: 680px) {
   .cards-grid { grid-template-columns: 1fr; gap: 12px; padding: 0 12px 32px; }
+  .hourly-section { padding: 0 12px; }
   .hero { padding-top: 40px; }
 }

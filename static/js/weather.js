@@ -1,67 +1,76 @@
 // cSpell:words uvsolar airquality dewpoint feelslike uvindex uvmax solarrad solarmax heatindex windbearing windgust windspeedavg tempmax tempmin pressuretrend raintoday rainyesterday solarraddaymax uvdaymax temp15min windchill
 // cSpell:words VIND REGN FUGTIGHED LUFTTRYK LUFTKVALITET TEMPERATUR Vindstød Dugpunkt Føles Stigende Faldende Stabilt indeks maks Solstråling Vindafkøling Varmeindeks Højde Opdateret NNØ NØ ØNØ ØSØ SSØ SSV VSV VNV
+// cSpell:words TIMEPROGNOSER DAGES Prognose precip gmin gmax
 const REFRESH_INTERVAL = 60000;
 
 // ── Translations ────────────────────────────────────────────────────────────
 const translations = {
   en: {
-    wind:        'WIND',
-    rain:        'RAIN',
-    humidity:    'HUMIDITY',
-    pressure:    'PRESSURE',
-    uvsolar:     'UV & SOLAR',
-    airquality:  'AIR QUALITY',
-    temperature: 'TEMPERATURE',
-    high:        'H',
-    low:         'L',
-    gusts:       'Gusts',
-    beaufort:    'Beaufort',
-    today:       'Today',
-    yesterday:   'Yesterday',
-    dewpoint:    'Dew point',
-    feelslike:   'Feels like',
-    rising:      'Rising',
-    falling:     'Falling',
-    steady:      'Steady',
-    uvindex:     'UV Index',
-    uvmax:       'UV Max today',
-    solarrad:    'Solar Rad',
-    solarmax:    'Solar Max',
-    avg15:       '15 min avg',
-    windchill:   'Wind chill',
-    heatindex:   'Heat index',
-    elevation:   'Elevation',
-    updated:     'Updated',
+    wind:           'WIND',
+    rain:           'RAIN',
+    humidity:       'HUMIDITY',
+    pressure:       'PRESSURE',
+    uvsolar:        'UV & SOLAR',
+    airquality:     'AIR QUALITY',
+    temperature:    'TEMPERATURE',
+    high:           'H',
+    low:            'L',
+    gusts:          'Gusts',
+    beaufort:       'Beaufort',
+    today:          'Today',
+    yesterday:      'Yesterday',
+    dewpoint:       'Dew point',
+    feelslike:      'Feels like',
+    rising:         'Rising',
+    falling:        'Falling',
+    steady:         'Steady',
+    uvindex:        'UV Index',
+    uvmax:          'UV Max today',
+    solarrad:       'Solar Rad',
+    solarmax:       'Solar Max',
+    avg15:          '15 min avg',
+    windchill:      'Wind chill',
+    heatindex:      'Heat index',
+    elevation:      'Elevation',
+    updated:        'Updated',
+    hourly:         'HOURLY FORECAST',
+    daily_forecast: '14-DAY FORECAST',
+    now:            'Now',
+    today_short:    'Today',
     dir_n: 'N', dir_e: 'E', dir_s: 'S', dir_w: 'W',
   },
   da: {
-    wind:        'VIND',
-    rain:        'REGN',
-    humidity:    'FUGTIGHED',
-    pressure:    'LUFTTRYK',
-    uvsolar:     'UV & SOL',
-    airquality:  'LUFTKVALITET',
-    temperature: 'TEMPERATUR',
-    high:        'H',
-    low:         'L',
-    gusts:       'Vindstød',
-    beaufort:    'Beaufort',
-    today:       'I dag',
-    yesterday:   'I går',
-    dewpoint:    'Dugpunkt',
-    feelslike:   'Føles som',
-    rising:      'Stigende',
-    falling:     'Faldende',
-    steady:      'Stabilt',
-    uvindex:     'UV-indeks',
-    uvmax:       'UV maks i dag',
-    solarrad:    'Solstråling',
-    solarmax:    'Sol maks',
-    avg15:       '15 min gns.',
-    windchill:   'Vindafkøling',
-    heatindex:   'Varmeindeks',
-    elevation:   'Højde',
-    updated:     'Opdateret',
+    wind:           'VIND',
+    rain:           'REGN',
+    humidity:       'FUGTIGHED',
+    pressure:       'LUFTTRYK',
+    uvsolar:        'UV & SOL',
+    airquality:     'LUFTKVALITET',
+    temperature:    'TEMPERATUR',
+    high:           'H',
+    low:            'L',
+    gusts:          'Vindstød',
+    beaufort:       'Beaufort',
+    today:          'I dag',
+    yesterday:      'I går',
+    dewpoint:       'Dugpunkt',
+    feelslike:      'Føles som',
+    rising:         'Stigende',
+    falling:        'Faldende',
+    steady:         'Stabilt',
+    uvindex:        'UV-indeks',
+    uvmax:          'UV maks i dag',
+    solarrad:       'Solstråling',
+    solarmax:       'Sol maks',
+    avg15:          '15 min gns.',
+    windchill:      'Vindafkøling',
+    heatindex:      'Varmeindeks',
+    elevation:      'Højde',
+    updated:        'Opdateret',
+    hourly:         'TIMEPROGNOSER',
+    daily_forecast: '14-DAGES PROGNOSE',
+    now:            'Nu',
+    today_short:    'I dag',
     dir_n: 'N', dir_e: 'Ø', dir_s: 'S', dir_w: 'V',
   },
 };
@@ -94,6 +103,28 @@ const windDirs = {
   da: ['N','NNØ','NØ','ØNØ','Ø','ØSØ','SØ','SSØ','S','SSV','SV','VSV','V','VNV','NV','NNV'],
 };
 
+const ICON_MAP = {
+  'clear-day':             '☀️',
+  'clear-night':           '🌙',
+  'partly-cloudy-day':     '⛅',
+  'partly-cloudy-night':   '🌛',
+  'cloudy':                '☁️',
+  'rain':                  '🌧️',
+  'showers-day':           '🌦️',
+  'showers-night':         '🌧️',
+  'snow':                  '❄️',
+  'snow-showers-day':      '🌨️',
+  'snow-showers-night':    '🌨️',
+  'sleet':                 '🌨️',
+  'wind':                  '💨',
+  'fog':                   '🌫️',
+  'thunder-rain':          '⛈️',
+  'thunder-showers-day':   '⛈️',
+  'thunder-showers-night': '⛈️',
+};
+
+function icon(name) { return ICON_MAP[name] || '🌡️'; }
+
 function windDir(deg) {
   if (deg == null) return '—';
   return windDirs[currentLang][Math.round(deg / 22.5) % 16];
@@ -105,6 +136,18 @@ function fmt(val, decimals = 1) {
 
 function fmtInt(val) {
   return val != null ? Math.round(val) : '—';
+}
+
+function fmtHour(iso) {
+  const d = new Date(iso);
+  return String(d.getHours()).padStart(2, '0');
+}
+
+function fmtDay(iso, index) {
+  const t = translations[currentLang];
+  if (index === 0) return `<span data-i18n="today_short">${t.today_short}</span>`;
+  const locale = currentLang === 'da' ? 'da-DK' : 'en-GB';
+  return new Date(iso).toLocaleDateString(locale, { weekday: 'short' });
 }
 
 function pressureTrendHtml(val) {
@@ -130,7 +173,63 @@ function setEl(id, value) {
   if (el) el.textContent = value;
 }
 
-// ── Data update ─────────────────────────────────────────────────────────────
+// ── Forecast builders ────────────────────────────────────────────────────────
+function buildHourlyStrip(hours) {
+  const container = document.getElementById('hourly-scroll');
+  if (!container || !hours.length) return;
+  const t = translations[currentLang];
+  container.innerHTML = hours.map((h, i) => {
+    const time = i === 0
+      ? `<span data-i18n="now">${t.now}</span>`
+      : fmtHour(h.datetime);
+    const precip = (h.precipitation_probability > 20)
+      ? `${h.precipitation_probability}%`
+      : '';
+    return `
+      <div class="hour-item">
+        <div class="hour-time">${time}</div>
+        <div class="hour-precip">${precip}</div>
+        <div class="hour-icon">${icon(h.icon)}</div>
+        <div class="hour-temp">${h.temperature != null ? Math.round(h.temperature) : '—'}°</div>
+      </div>`;
+  }).join('');
+}
+
+function buildDailyForecast(days) {
+  const container = document.getElementById('daily-forecast');
+  if (!container || !days.length) return;
+  const t = translations[currentLang];
+
+  const temps = days.flatMap(d => [d.temperature, d.temp_low].filter(v => v != null));
+  const gmin = Math.min(...temps);
+  const gmax = Math.max(...temps);
+  const span = gmax - gmin || 1;
+
+  const label = container.querySelector('.card-label');
+  const rows = days.map((d, i) => {
+    const lo   = d.temp_low ?? gmin;
+    const hi   = d.temperature ?? gmin;
+    const left  = Math.max(0, (lo - gmin) / span * 100).toFixed(1);
+    const width = Math.max(2, (hi - lo)   / span * 100).toFixed(1);
+    const divider = i < days.length - 1 ? '<div class="daily-divider"></div>' : '';
+    return `
+      <div class="daily-row">
+        <div class="daily-day">${fmtDay(d.datetime, i)}</div>
+        <div class="daily-icon">${icon(d.icon)}</div>
+        <div class="daily-low">${d.temp_low != null ? Math.round(d.temp_low) : '—'}°</div>
+        <div class="daily-bar-bg">
+          <div class="daily-bar-fill" style="left:${left}%;width:${width}%"></div>
+        </div>
+        <div class="daily-high">${d.temperature != null ? Math.round(d.temperature) : '—'}°</div>
+      </div>${divider}`;
+  }).join('');
+
+  container.innerHTML = `
+    <div class="card-label" data-i18n="daily_forecast">${t.daily_forecast}</div>
+    ${rows}`;
+}
+
+// ── Realtime data update ─────────────────────────────────────────────────────
 function updatePage(d) {
   setEl('temp-now', d.temperature != null ? `${fmtInt(d.temperature)}°` : '—');
   setEl('temp-max', d.tempmax != null ? `${fmtInt(d.tempmax)}°` : '—');
@@ -164,9 +263,7 @@ function updatePage(d) {
   if (pressureEl) pressureEl.innerHTML = `${fmt(d.sealevelpressure)} <span class="unit">hPa</span>`;
 
   const trendEl = document.getElementById('pressure-trend');
-  if (trendEl) {
-    trendEl.innerHTML = pressureTrendHtml(d.pressuretrend);
-  }
+  if (trendEl) trendEl.innerHTML = pressureTrendHtml(d.pressuretrend);
 
   const uvFill = document.getElementById('uv-fill');
   if (uvFill) uvFill.style.width = `${uvMaskWidth(d.uv)}%`;
@@ -184,17 +281,20 @@ function updatePage(d) {
   setEl('heatindex', d.heatindex != null ? `${fmt(d.heatindex)}°` : '—');
 
   updateTimestamp();
-
-  // Re-apply translations so any newly injected data-i18n spans are translated
   applyTranslations(currentLang);
 }
 
+// ── Fetch all data ───────────────────────────────────────────────────────────
 async function fetchAndUpdate() {
   try {
-    const res = await fetch('/api/data');
-    if (!res.ok) return;
-    const data = await res.json();
-    updatePage(data);
+    const [dataRes, hourlyRes, dailyRes] = await Promise.all([
+      fetch('/api/data'),
+      fetch('/api/hourly'),
+      fetch('/api/daily'),
+    ]);
+    if (dataRes.ok)   updatePage(await dataRes.json());
+    if (hourlyRes.ok) buildHourlyStrip(await hourlyRes.json());
+    if (dailyRes.ok)  buildDailyForecast(await dailyRes.json());
   } catch (e) {
     console.warn('Weather fetch failed:', e);
   }
@@ -205,6 +305,7 @@ document.getElementById('lang-toggle').addEventListener('click', () => {
   currentLang = currentLang === 'en' ? 'da' : 'en';
   localStorage.setItem('lang', currentLang);
   applyTranslations(currentLang);
+  fetchAndUpdate();
 });
 
 applyTranslations(currentLang);
