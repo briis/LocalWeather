@@ -12,8 +12,27 @@ DB_CONFIG = {
     'connect_timeout': 5,
 }
 
+# Maps Home Assistant weather condition names to Meteocons PNG filenames
+ICON_MAP = {
+    'sunny':           'clear-day.png',
+    'clear-night':     'clear-night.png',
+    'partlycloudy':    'partly-cloudy-day.png',
+    'cloudy':          'cloudy.png',
+    'fog':             'fog.png',
+    'rainy':           'rain.png',
+    'pouring':         'overcast-rain.png',
+    'snowy':           'snow.png',
+    'snowy-rainy':     'sleet.png',
+    'hail':            'hail.png',
+    'lightning':       'thunderstorms.png',
+    'lightning-rainy': 'thunderstorms-rain.png',
+    'windy':           'wind.png',
+    'windy-variant':   'wind.png',
+    'exceptional':     'extreme.png',
+}
+
 def weather_icon(name):
-    return f"{name}.png" if name else 'not-available.png'
+    return ICON_MAP.get(name or '', 'not-available.png')
 
 app.jinja_env.filters['weather_icon'] = weather_icon
 

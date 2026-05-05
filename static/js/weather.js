@@ -103,9 +103,28 @@ const windDirs = {
   da: ['N','NNØ','NØ','ØNØ','Ø','ØSØ','SØ','SSØ','S','SSV','SV','VSV','V','VNV','NV','NNV'],
 };
 
+// Maps Home Assistant weather condition names to Meteocons PNG filenames
+const ICON_MAP = {
+  'sunny':           'clear-day.png',
+  'clear-night':     'clear-night.png',
+  'partlycloudy':    'partly-cloudy-day.png',
+  'cloudy':          'cloudy.png',
+  'fog':             'fog.png',
+  'rainy':           'rain.png',
+  'pouring':         'overcast-rain.png',
+  'snowy':           'snow.png',
+  'snowy-rainy':     'sleet.png',
+  'hail':            'hail.png',
+  'lightning':       'thunderstorms.png',
+  'lightning-rainy': 'thunderstorms-rain.png',
+  'windy':           'wind.png',
+  'windy-variant':   'wind.png',
+  'exceptional':     'extreme.png',
+};
+
 function icon(name, size = 'sm') {
-  const file = name || 'not-available';
-  return `<img class="wi wi-${size}" src="/static/images/${file}.png" alt="${file}" onerror="this.src='/static/images/not-available.png'">`;
+  const file = ICON_MAP[name] || 'not-available.png';
+  return `<img class="wi wi-${size}" src="/static/images/${file}" alt="${name || ''}" onerror="this.src='/static/images/not-available.png'">`;
 }
 
 function windDir(deg) {
@@ -216,7 +235,7 @@ function buildDailyForecast(days) {
 function updatePage(d) {
   const heroIcon = document.getElementById('hero-icon');
   if (heroIcon && d.icon) {
-    heroIcon.src = `/static/images/${d.icon}.png`;
+    heroIcon.src = `/static/images/${ICON_MAP[d.icon] || 'not-available.png'}`;
     heroIcon.alt = d.icon;
   }
   setEl('temp-now', d.temperature != null ? `${fmtInt(d.temperature)}°` : '—');
