@@ -12,28 +12,8 @@ DB_CONFIG = {
     'connect_timeout': 5,
 }
 
-ICON_MAP = {
-    'clear-day':             '☀️',
-    'clear-night':           '🌙',
-    'partly-cloudy-day':     '⛅',
-    'partly-cloudy-night':   '🌛',
-    'cloudy':                '☁️',
-    'rain':                  '🌧️',
-    'showers-day':           '🌦️',
-    'showers-night':         '🌧️',
-    'snow':                  '❄️',
-    'snow-showers-day':      '🌨️',
-    'snow-showers-night':    '🌨️',
-    'sleet':                 '🌨️',
-    'wind':                  '💨',
-    'fog':                   '🌫️',
-    'thunder-rain':          '⛈️',
-    'thunder-showers-day':   '⛈️',
-    'thunder-showers-night': '⛈️',
-}
-
 def weather_icon(name):
-    return ICON_MAP.get(name or '', '🌡️')
+    return f"{name}.png" if name else 'not-available.png'
 
 app.jinja_env.filters['weather_icon'] = weather_icon
 

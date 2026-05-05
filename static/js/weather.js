@@ -1,6 +1,6 @@
 // cSpell:words uvsolar airquality dewpoint feelslike uvindex uvmax solarrad solarmax heatindex windbearing windgust windspeedavg tempmax tempmin pressuretrend raintoday rainyesterday solarraddaymax uvdaymax temp15min windchill
 // cSpell:words VIND REGN FUGTIGHED LUFTTRYK LUFTKVALITET TEMPERATUR Vindstød Dugpunkt Føles Stigende Faldende Stabilt indeks maks Solstråling Vindafkøling Varmeindeks Højde Opdateret NNØ NØ ØNØ ØSØ SSØ SSV VSV VNV
-// cSpell:words TIMEPROGNOSER DAGES Prognose precip gmin gmax
+// cSpell:words TIMEPROGNOSER DAGES Prognose gmin gmax
 const REFRESH_INTERVAL = 60000;
 
 // ── Translations ────────────────────────────────────────────────────────────
@@ -103,27 +103,10 @@ const windDirs = {
   da: ['N','NNØ','NØ','ØNØ','Ø','ØSØ','SØ','SSØ','S','SSV','SV','VSV','V','VNV','NV','NNV'],
 };
 
-const ICON_MAP = {
-  'clear-day':             '☀️',
-  'clear-night':           '🌙',
-  'partly-cloudy-day':     '⛅',
-  'partly-cloudy-night':   '🌛',
-  'cloudy':                '☁️',
-  'rain':                  '🌧️',
-  'showers-day':           '🌦️',
-  'showers-night':         '🌧️',
-  'snow':                  '❄️',
-  'snow-showers-day':      '🌨️',
-  'snow-showers-night':    '🌨️',
-  'sleet':                 '🌨️',
-  'wind':                  '💨',
-  'fog':                   '🌫️',
-  'thunder-rain':          '⛈️',
-  'thunder-showers-day':   '⛈️',
-  'thunder-showers-night': '⛈️',
-};
-
-function icon(name) { return ICON_MAP[name] || '🌡️'; }
+function icon(name, size = 'sm') {
+  const file = name || 'not-available';
+  return `<img class="wi wi-${size}" src="/static/images/${file}.png" alt="${file}" onerror="this.src='/static/images/not-available.png'">`;
+}
 
 function windDir(deg) {
   if (deg == null) return '—';
@@ -231,6 +214,11 @@ function buildDailyForecast(days) {
 
 // ── Realtime data update ─────────────────────────────────────────────────────
 function updatePage(d) {
+  const heroIcon = document.getElementById('hero-icon');
+  if (heroIcon && d.icon) {
+    heroIcon.src = `/static/images/${d.icon}.png`;
+    heroIcon.alt = d.icon;
+  }
   setEl('temp-now', d.temperature != null ? `${fmtInt(d.temperature)}°` : '—');
   setEl('temp-max', d.tempmax != null ? `${fmtInt(d.tempmax)}°` : '—');
   setEl('temp-min', d.tempmin != null ? `${fmtInt(d.tempmin)}°` : '—');

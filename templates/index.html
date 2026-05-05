@@ -17,6 +17,11 @@
         <span class="station-name">{{ data.mb_stationname if data and data.mb_stationname else 'Weather Station' }}</span>
         <span class="conditions-label">{{ data.conditions if data and data.conditions else '—' }}</span>
       </div>
+      {% if data and data.icon %}
+      <div class="hero-icon-wrap">
+        <img class="wi wi-hero" id="hero-icon" src="/static/images/{{ data.icon | weather_icon }}" alt="{{ data.icon }}" onerror="this.src='/static/images/not-available.png'">
+      </div>
+      {% endif %}
       <div class="temp-hero">
         <span class="temp-now" id="temp-now">{{ '%.0f'|format(data.temperature) if data and data.temperature is not none else '—' }}°</span>
       </div>
@@ -40,7 +45,7 @@
           <div class="hour-item">
             <div class="hour-time">{% if loop.first %}<span data-i18n="now">Now</span>{% else %}{{ h.datetime.strftime('%H') if h.datetime else '—' }}{% endif %}</div>
             <div class="hour-precip">{% if h.precipitation_probability and h.precipitation_probability > 20 %}{{ h.precipitation_probability }}%{% endif %}</div>
-            <div class="hour-icon">{{ h.icon | weather_icon }}</div>
+            <div class="hour-icon"><img class="wi wi-sm" src="/static/images/{{ h.icon | weather_icon }}" alt="{{ h.icon or '' }}" onerror="this.src='/static/images/not-available.png'"></div>
             <div class="hour-temp">{{ '%.0f'|format(h.temperature) if h.temperature is not none else '—' }}°</div>
           </div>
           {% endfor %}
@@ -61,7 +66,7 @@
           <div class="daily-day">
             {% if loop.first %}<span data-i18n="today_short">Today</span>{% else %}{{ d.datetime.strftime('%a') if d.datetime else '—' }}{% endif %}
           </div>
-          <div class="daily-icon">{{ d.icon | weather_icon }}</div>
+          <div class="daily-icon"><img class="wi wi-sm" src="/static/images/{{ d.icon | weather_icon }}" alt="{{ d.icon or '' }}" onerror="this.src='/static/images/not-available.png'"></div>
           <div class="daily-low">{{ '%.0f'|format(d.temp_low) if d.temp_low is not none else '—' }}°</div>
           <div class="daily-bar-bg">
             <div class="daily-bar-fill" style="left:{{ bars[loop.index0].left }}%;width:{{ bars[loop.index0].width }}%"></div>
@@ -97,7 +102,7 @@
       <!-- Rain -->
       <div class="card card-rain">
         <div class="card-label" data-i18n="rain">RAIN</div>
-        <div class="rain-icon">🌧</div>
+        <div class="rain-icon"><img class="wi wi-lg" src="/static/images/rain.png" alt="rain"></div>
         <div class="metric-big" id="rain-rate">{{ '%.1f'|format(data.rainrate) if data and data.rainrate is not none else '0.0' }} <span class="unit">mm/h</span></div>
         <div class="metric-row">
           <div class="metric-item">
