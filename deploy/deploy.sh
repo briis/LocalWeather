@@ -36,6 +36,15 @@ else
         "$(dirname "$0")/../" "$APP_DIR/"
 fi
 
+echo "==> Checking weather images"
+IMAGE_DIR="$APP_DIR/static/images"
+if [ ! -d "$IMAGE_DIR" ] || [ -z "$(ls -A "$IMAGE_DIR" 2>/dev/null)" ]; then
+    echo "    Images missing — restoring from repository"
+    git -C "$APP_DIR" checkout HEAD -- static/images/
+else
+    echo "    Images already present, skipping"
+fi
+
 echo "==> Creating Python virtual environment"
 python3 -m venv "$APP_DIR/.venv"
 "$APP_DIR/.venv/bin/pip" install --quiet --upgrade pip
