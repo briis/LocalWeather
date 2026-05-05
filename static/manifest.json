@@ -1,6 +1,6 @@
 {
   "name": "Local Weather",
-  "short_name": "Weather",
+  "short_name": "Lokalt Vejr",
   "description": "Local weather station dashboard",
   "start_url": "/",
   "display": "standalone",
@@ -9,9 +9,9 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/static/images/partly-cloudy-day.png",
+      "src": "/static/favicon.svg",
       "sizes": "any",
-      "type": "image/png",
+      "type": "image/svg+xml",
       "purpose": "any maskable"
     }
   ]
