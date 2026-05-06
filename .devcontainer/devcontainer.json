@@ -1,6 +1,6 @@
 {
   "name": "LocalWeather",
-  "dockerComposeFile": "../docker-compose.yml",
+  "dockerComposeFile": ["../docker-compose.yml"],
   "service": "web",
   "workspaceFolder": "/app",
   "forwardPorts": [5000],

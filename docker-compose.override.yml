@@ -1,0 +1,4 @@
+services:
+  web:
+    entrypoint: ["sleep", "infinity"]
+    restart: "no"

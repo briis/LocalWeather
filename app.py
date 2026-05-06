@@ -7,20 +7,23 @@ from aqi_calculator import calculate_aqi
 from typing import Any
 import math
 from datetime import datetime
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 
-# Update these to match your weather station's location
-STATION_LAT = 55.64  # degrees North
-STATION_LON = 12.09  # degrees East
-STATION_TZ = "Europe/Copenhagen"
+STATION_LAT = float(os.environ["STATION_LAT"])
+STATION_LON = float(os.environ["STATION_LON"])
+STATION_TZ = os.environ["STATION_TZ"]
 
 DB_CONFIG = {
-    "host": "192.168.1.9",
-    "database": "weather_history",
-    "user": "weather_user",
-    "password": "pfe27co-@yRr4oLP",
-    "connect_timeout": 5,
+    "host": os.environ["DB_HOST"],
+    "database": os.environ["DB_NAME"],
+    "user": os.environ["DB_USER"],
+    "password": os.environ["DB_PASSWORD"],
+    "connect_timeout": int(os.getenv("DB_CONNECT_TIMEOUT", "5")),
 }
 
 # Maps Home Assistant weather condition names to Meteocons PNG filenames

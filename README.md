@@ -42,22 +42,27 @@ Flask (app.py)  →  Jinja2 template  →  Browser
 
 ## Configuration
 
-Edit the top of [app.py](app.py) before deploying:
+Copy [.env.example](.env.example) to `.env` and edit the values before deploying:
 
-```python
-# Database
-DB_CONFIG = {
-    'host':     '192.168.1.9',
-    'database': 'weather_history',
-    'user':     'weather_user',
-    'password': 'your-password',
-}
-
-# Station location — used for sunrise/sunset and moon calculations
-STATION_LAT = 55.64   # degrees North
-STATION_LON = 12.09   # degrees East
-STATION_TZ  = 'Europe/Copenhagen'
+```bash
+cp .env.example .env
 ```
+
+```ini
+# Station location — used for sunrise/sunset and moon calculations
+STATION_LAT=55.64
+STATION_LON=12.09
+STATION_TZ=Europe/Copenhagen
+
+# MySQL database connection
+DB_HOST=192.168.1.9
+DB_NAME=weather_history
+DB_USER=weather_user
+DB_PASSWORD=your-password
+DB_CONNECT_TIMEOUT=5
+```
+
+The `.env` file is never committed to the repository. On a fresh production deployment the deploy script copies `.env.example` to `.env` automatically if no `.env` is present — edit `/opt/localweather/.env` afterwards to set your real credentials.
 
 ## Database Schema
 
@@ -111,7 +116,7 @@ Recommended extensions (installed automatically inside the container):
 
 ### Database access from the container
 
-The container uses `extra_hosts: host.docker.internal:host-gateway` so the Flask app can reach a MySQL instance running on your host machine. Update `DB_CONFIG` in `app.py` to point at `host.docker.internal` instead of a bare IP if needed.
+The container uses `extra_hosts: host.docker.internal:host-gateway` so the Flask app can reach a MySQL instance running on your host machine. Update `DB_HOST` in `.env` to `host.docker.internal` instead of a bare IP if needed.
 
 ### Linting
 
@@ -167,6 +172,7 @@ The app will be served on **port 80** of the LXC's IP address.
 ```text
 LocalWeather/
 ├── app.py                  # Flask app, DB queries, AQI / sun / moon logic
+├── .env.example            # Configuration template — copy to .env and edit
 ├── aqi_calculator.py       # EPA AQI calculation from PM2.5 and PM10
 ├── requirements.txt
 ├── templates/

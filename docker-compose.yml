@@ -5,6 +5,8 @@ services:
       - "8080:5000"
     volumes:
       - .:/app
+    env_file:
+      - .env
     environment:
       FLASK_ENV: development
       FLASK_DEBUG: "1"

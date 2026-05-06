@@ -74,6 +74,14 @@ else
     echo "    Images already present, skipping"
 fi
 
+echo "==> Setting up .env"
+if [ ! -f "$APP_DIR/.env" ]; then
+    cp "$APP_DIR/.env.example" "$APP_DIR/.env"
+    echo "    Created .env from .env.example — edit $APP_DIR/.env to set your credentials"
+else
+    echo "    .env already exists, skipping"
+fi
+
 echo "==> Creating Python virtual environment"
 python3 -m venv "$APP_DIR/.venv"
 "$APP_DIR/.venv/bin/pip" install --quiet --upgrade pip
