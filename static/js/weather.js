@@ -252,7 +252,7 @@ function buildHourlyStrip(hours) {
 
   requestAnimationFrame(() => {
     const nowItem = container.querySelectorAll('.hour-item')[nowIndex];
-    if (nowItem) container.scrollLeft = nowItem.offsetLeft;
+    if (nowItem) container.scrollLeft = nowItem.offsetLeft - nowItem.offsetWidth - 2;
   });
 }
 
@@ -641,7 +641,7 @@ updateSunDot();
   if (!scroll) return;
   const idx   = parseInt(scroll.dataset.nowIndex || '0', 10);
   const items = scroll.querySelectorAll('.hour-item');
-  if (items[idx]) scroll.scrollLeft = items[idx].offsetLeft;
+  if (items[idx]) scroll.scrollLeft = items[idx].offsetLeft - items[idx].offsetWidth - 2;
 })();
 
 setInterval(fetchAndUpdate, REFRESH_INTERVAL);
