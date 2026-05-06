@@ -1,22 +1,22 @@
-"""
-AQI Calculator for PM2.5 and PM10
+"""AQI Calculator for PM2.5 and PM10.
+
 Based on US EPA breakpoints (revised 2024).
 """
 
 from dataclasses import dataclass
 
 _PM25_BREAKPOINTS = [
-    (0.0,   9.0,   0,   50),
-    (9.1,  35.4,  51,  100),
-    (35.5, 55.4, 101,  150),
+    (0.0, 9.0, 0, 50),
+    (9.1, 35.4, 51, 100),
+    (35.5, 55.4, 101, 150),
     (55.5, 125.4, 151, 200),
     (125.5, 225.4, 201, 300),
     (225.5, 325.4, 301, 500),
 ]
 
 _PM10_BREAKPOINTS = [
-    (0,   54,   0,  50),
-    (55,  154,  51, 100),
+    (0, 54, 0, 50),
+    (55, 154, 51, 100),
     (155, 254, 101, 150),
     (255, 354, 151, 200),
     (355, 424, 201, 300),
@@ -24,17 +24,19 @@ _PM10_BREAKPOINTS = [
 ]
 
 AQI_CATEGORIES = [
-    (0,   50,  "Good",                            "#00E400"),
-    (51,  100, "Moderate",                         "#FFFF00"),
-    (101, 150, "Unhealthy for Sensitive Groups",   "#FF7E00"),
-    (151, 200, "Unhealthy",                        "#FF0000"),
-    (201, 300, "Very Unhealthy",                   "#8F3F97"),
-    (301, 500, "Hazardous",                        "#7E0023"),
+    (0, 50, "Good", "#00E400"),
+    (51, 100, "Moderate", "#FFFF00"),
+    (101, 150, "Unhealthy for Sensitive Groups", "#FF7E00"),
+    (151, 200, "Unhealthy", "#FF0000"),
+    (201, 300, "Very Unhealthy", "#8F3F97"),
+    (301, 500, "Hazardous", "#7E0023"),
 ]
 
 
 @dataclass
 class AQIResult:
+    """Holds the computed AQI value, category, color, and per-pollutant sub-indices."""
+
     aqi: int
     category: str
     color: str
@@ -78,6 +80,7 @@ def calculate_aqi(
     pm25: float | None = None,
     pm10: float | None = None,
 ) -> AQIResult | None:
+    """Calculate AQI from PM2.5 and/or PM10 concentrations; returns None if neither is provided."""
     pm25_aqi: int | None = None
     pm10_aqi: int | None = None
 
@@ -86,7 +89,9 @@ def calculate_aqi(
     if pm10 is not None:
         pm10_aqi = _linear_interpolation(_truncate_pm10(pm10), _PM10_BREAKPOINTS)
 
-    valid = {k: v for k, v in {"PM2.5": pm25_aqi, "PM10": pm10_aqi}.items() if v is not None}
+    valid = {
+        k: v for k, v in {"PM2.5": pm25_aqi, "PM10": pm10_aqi}.items() if v is not None
+    }
     if not valid:
         return None
 
