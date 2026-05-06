@@ -66,20 +66,54 @@ The app reads from three tables. Reference schemas are in [Docs/](Docs/).
 
 ## Development
 
-Requires Docker and Docker Compose.
+### Prerequisites
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (or Docker Engine + Compose)
+- VS Code with the [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension (optional but recommended)
+
+### Quick start (terminal)
 
 ```bash
-# Clone
 git clone https://github.com/briis/LocalWeather
 cd LocalWeather
-
-# Start dev server (live-reloads on file changes)
 docker compose up --build
 ```
 
 The app is available at <http://localhost:8080>.
 
-The container mounts the project directory as a volume, so any file change is reflected immediately without rebuilding.
+The project directory is mounted as a volume inside the container, so edits to any Python, HTML, or CSS file are picked up immediately by Flask's development server — no rebuild required. Structural changes (new dependencies in `requirements.txt`, changes to the `Dockerfile`) do require a rebuild:
+
+```bash
+docker compose up --build
+```
+
+### Dev Containers (VS Code)
+
+The repo includes a `.devcontainer` configuration that wires VS Code directly into the running container:
+
+1. Open the repo folder in VS Code.
+2. When prompted, click **Reopen in Container** (or run `Dev Containers: Reopen in Container` from the command palette).
+3. VS Code attaches to the `web` service defined in `docker-compose.yml`, forwards port 5000, and opens a browser tab automatically.
+
+Recommended extensions (installed automatically inside the container):
+
+| Extension | Purpose |
+| --- | --- |
+| `ms-python.python` | Python language support and IntelliSense |
+| `ms-python.debugpy` | Debugger — attach to the running Flask process |
+| `GitHub.vscode-pull-request-github` | PR and issue management |
+
+### Database access from the container
+
+The container uses `extra_hosts: host.docker.internal:host-gateway` so the Flask app can reach a MySQL instance running on your host machine. Update `DB_CONFIG` in `app.py` to point at `host.docker.internal` instead of a bare IP if needed.
+
+### Linting
+
+```bash
+bash scripts/lint
+```
+
+Runs `ruff format` (auto-formats) then `ruff check --fix` (auto-fixes lint errors) across the whole project. Configuration is in [.ruff.toml](.ruff.toml).
 
 ## Production Deployment (Proxmox LXC)
 
@@ -97,9 +131,10 @@ The script will:
 
 1. Install `python3`, `nginx`, and `git` via `apt`
 2. Clone / pull the repository into `/opt/localweather`
-3. Create a Python virtual environment and install `requirements.txt`
-4. Install and start the `localweather` systemd service (Gunicorn)
-5. Configure nginx as a reverse proxy and restart it
+3. Remove dev-only files (`Dockerfile`, `docker-compose.yml`, `scripts/`, `Docs/`, `.devcontainer/`, etc.) from the deployment directory
+4. Create a Python virtual environment and install `requirements.txt`
+5. Install and start the `localweather` systemd service (Gunicorn)
+6. Configure nginx as a reverse proxy and restart it
 
 The app will be served on **port 80** of the LXC's IP address.
 
@@ -127,8 +162,6 @@ LocalWeather/
 ├── app.py                  # Flask app, DB queries, AQI / sun / moon logic
 ├── aqi_calculator.py       # EPA AQI calculation from PM2.5 and PM10
 ├── requirements.txt
-├── Dockerfile
-├── docker-compose.yml
 ├── templates/
 │   └── index.html          # Single-page Jinja2 template
 ├── static/
@@ -137,11 +170,17 @@ LocalWeather/
 │   ├── images/             # Meteocons PNG weather icons
 │   ├── favicon.svg
 │   └── manifest.json       # PWA manifest
-├── deploy/
+├── deploy/                 # Production deployment (not copied to live server)
 │   ├── deploy.sh
 │   ├── localweather.service
 │   └── localweather.nginx
-└── Docs/
+├── Dockerfile              # Dev environment only
+├── docker-compose.yml      # Dev environment only
+├── .devcontainer/          # VS Code Dev Containers config
+├── .ruff.toml              # Linter config
+├── scripts/
+│   └── lint                # Run ruff format + check
+└── Docs/                   # Reference SQL schemas
     ├── realtime_data_structure.sql
     ├── forecas_data_structure.sql
     └── minute_data_structure.sql
