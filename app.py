@@ -1,6 +1,6 @@
 """Flask weather dashboard serving real-time and forecast data from MySQL."""
 
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 import mysql.connector
 from mysql.connector import Error
 from aqi_calculator import calculate_aqi
@@ -303,6 +303,28 @@ def api_hourly():
 def api_daily():
     """Return daily forecast rows as a JSON array."""
     return jsonify([serialize(r) for r in get_daily_forecast()])
+
+
+_HISTORY_FIELDS = {
+    "temperature", "wind_chill", "heat_index", "humidity", "dewpoint",
+    "rain_rate", "rain_day", "wind_speed", "wind_gust", "pressure",
+    "uv", "solar_radiation", "air_Quality_pm1", "air_Quality_pm10", "air_Quality_pm25",
+}
+
+
+@app.route("/api/history")
+def api_history():
+    """Return 36 hours of minute_data for the requested sensor fields."""
+    requested = request.args.get("fields", "temperature").split(",")
+    fields = [f for f in requested if f in _HISTORY_FIELDS]
+    if not fields:
+        return jsonify([])
+    field_sql = ", ".join(f"`{f}`" for f in fields)
+    rows = _query(
+        f"SELECT `logdate`, {field_sql} FROM minute_data"
+        f" WHERE logdate >= NOW() - INTERVAL 36 HOUR ORDER BY logdate ASC"
+    )
+    return jsonify([serialize(r) for r in rows])
 
 
 if __name__ == "__main__":

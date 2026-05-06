@@ -1,6 +1,7 @@
 // cSpell:words uvsolar airquality dewpoint feelslike uvindex uvmax solarrad solarmax heatindex windbearing windgust windspeedavg tempmax tempmin pressuretrend raintoday rainyesterday solarraddaymax uvdaymax temp15min windchill
 // cSpell:words VIND REGN FUGTIGHED LUFTTRYK LUFTKVALITET TEMPERATUR Vindstød Dugpunkt Føles Stigende Faldende Stabilt indeks maks Solstråling Vindafkøling Varmeindeks Højde Opdateret NNØ NØ ØNØ ØSØ SSØ SSV VSV VNV
 // cSpell:words TIMEPROGNOSER DAGES Prognose gmin gmax Moderat Usund følsomme Meget Farlig
+// cSpell:words uvsolar airquality hexToRgba cssVar buildChart openChart closeChart Regnintensitet Dugpunkt Solstråling Luftkvalitet chartjs
 // cSpell:words Nymåne Fuldmåne Halvmåne Voksende Aftagende Belysning fuldmåne dage Gibbous Kvartal SOLNEDGANG SOLDATA
 const REFRESH_INTERVAL = 60000;
 
@@ -423,6 +424,181 @@ function updatePage(d) {
   updateTimestamp();
   applyTranslations(currentLang);
 }
+
+// ── History Charts ───────────────────────────────────────────────────────────
+const HISTORY_CONFIGS = {
+  temperature: {
+    title:   { en: 'Temperature — 36h', da: 'Temperatur — 36t' },
+    fields:  'temperature,wind_chill,heat_index',
+    yLabel:  '°C',
+    datasets: [
+      { field: 'temperature', label: { en: 'Temperature', da: 'Temperatur'  }, color: '#ef5350' },
+      { field: 'wind_chill',  label: { en: 'Wind chill',  da: 'Vindafkøling'}, color: '#4fc3f7' },
+      { field: 'heat_index',  label: { en: 'Heat index',  da: 'Varmeindeks' }, color: '#ff9800' },
+    ],
+  },
+  wind: {
+    title:   { en: 'Wind — 36h', da: 'Vind — 36t' },
+    fields:  'wind_speed,wind_gust',
+    yLabel:  'm/s',
+    datasets: [
+      { field: 'wind_speed', label: { en: 'Wind speed', da: 'Vindstyrke' }, color: '#66bb6a' },
+      { field: 'wind_gust',  label: { en: 'Gusts',      da: 'Vindstød'  }, color: '#ffca28' },
+    ],
+  },
+  rain: {
+    title:   { en: 'Rain — 36h', da: 'Regn — 36t' },
+    fields:  'rain_rate',
+    yLabel:  'mm/h',
+    datasets: [
+      { field: 'rain_rate', label: { en: 'Rain rate', da: 'Regnintensitet' }, color: '#4fc3f7', fill: true },
+    ],
+  },
+  humidity: {
+    title:     { en: 'Humidity — 36h', da: 'Fugtighed — 36t' },
+    fields:    'humidity,dewpoint',
+    yLabel:    '%',
+    y2Label:   '°C',
+    dualAxis:  true,
+    datasets: [
+      { field: 'humidity', label: { en: 'Humidity',  da: 'Fugtighed' }, color: '#42a5f5', yAxisID: 'y'  },
+      { field: 'dewpoint', label: { en: 'Dew point', da: 'Dugpunkt'  }, color: '#80cbc4', yAxisID: 'y2' },
+    ],
+  },
+  pressure: {
+    title:   { en: 'Pressure — 36h', da: 'Lufttryk — 36t' },
+    fields:  'pressure',
+    yLabel:  'hPa',
+    datasets: [
+      { field: 'pressure', label: { en: 'Pressure', da: 'Lufttryk' }, color: '#ab47bc' },
+    ],
+  },
+  uvsolar: {
+    title:    { en: 'UV & Solar — 36h', da: 'UV & Sol — 36t' },
+    fields:   'solar_radiation,uv',
+    yLabel:   'W/m²',
+    y2Label:  'UV',
+    dualAxis: true,
+    datasets: [
+      { field: 'solar_radiation', label: { en: 'Solar radiation', da: 'Solstråling' }, color: '#ffd54f', yAxisID: 'y',  fill: true },
+      { field: 'uv',              label: { en: 'UV index',        da: 'UV-indeks'   }, color: '#ff9800', yAxisID: 'y2' },
+    ],
+  },
+  airquality: {
+    title:   { en: 'Air Quality — 36h', da: 'Luftkvalitet — 36t' },
+    fields:  'air_Quality_pm1,air_Quality_pm25,air_Quality_pm10',
+    yLabel:  'µg/m³',
+    datasets: [
+      { field: 'air_Quality_pm1',  label: { en: 'PM1',  da: 'PM1'  }, color: '#ef9a9a' },
+      { field: 'air_Quality_pm25', label: { en: 'PM2.5',da: 'PM2.5'}, color: '#ef5350' },
+      { field: 'air_Quality_pm10', label: { en: 'PM10', da: 'PM10' }, color: '#b71c1c' },
+    ],
+  },
+};
+
+let activeChart = null;
+
+function hexToRgba(hex, alpha) {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+function cssVar(name) {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
+function buildChart(rows, config) {
+  const canvas = document.getElementById('chart-canvas');
+  if (activeChart) { activeChart.destroy(); activeChart = null; }
+
+  const gridColor  = hexToRgba('#888888', 0.18);
+  const textColor  = cssVar('--text-dim') || '#aaa';
+
+  const datasets = config.datasets.map(ds => ({
+    label:           ds.label[currentLang] ?? ds.label.en,
+    data:            rows.map(r => ({ x: r.logdate, y: r[ds.field] })),
+    borderColor:     ds.color,
+    backgroundColor: ds.fill ? hexToRgba(ds.color, 0.22) : 'transparent',
+    fill:            ds.fill ?? false,
+    borderWidth:     1.5,
+    pointRadius:     0,
+    tension:         0.3,
+    yAxisID:         ds.yAxisID ?? 'y',
+  }));
+
+  const scales = {
+    x: {
+      type: 'time',
+      time: {
+        tooltipFormat:  'dd MMM HH:mm',
+        displayFormats: { hour: 'HH:mm', day: 'dd MMM' },
+      },
+      ticks: { color: textColor, maxTicksLimit: 8 },
+      grid:  { color: gridColor },
+    },
+    y: {
+      title: { display: !!config.yLabel, text: config.yLabel, color: textColor },
+      ticks: { color: textColor },
+      grid:  { color: gridColor },
+    },
+  };
+
+  if (config.dualAxis) {
+    scales.y2 = {
+      position: 'right',
+      title:    { display: !!config.y2Label, text: config.y2Label, color: textColor },
+      ticks:    { color: textColor },
+      grid:     { drawOnChartArea: false },
+    };
+  }
+
+  activeChart = new Chart(canvas, {
+    type: 'line',
+    data: { datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend:  { labels: { color: textColor, boxWidth: 12, padding: 12 } },
+        tooltip: { backgroundColor: hexToRgba('#1a3a5c', 0.95) },
+      },
+      scales,
+    },
+  });
+}
+
+async function openChart(chartKey) {
+  const config = HISTORY_CONFIGS[chartKey];
+  if (!config) return;
+  const modal   = document.getElementById('chart-modal');
+  const titleEl = document.getElementById('chart-modal-title');
+  titleEl.textContent = config.title[currentLang] ?? config.title.en;
+  modal.hidden = false;
+  document.body.style.overflow = 'hidden';
+  try {
+    const res = await fetch(`/api/history?fields=${config.fields}`);
+    if (!res.ok) throw new Error('fetch failed');
+    buildChart(await res.json(), config);
+  } catch (e) {
+    console.warn('Chart fetch failed:', e);
+  }
+}
+
+function closeChart() {
+  document.getElementById('chart-modal').hidden = true;
+  document.body.style.overflow = '';
+  if (activeChart) { activeChart.destroy(); activeChart = null; }
+}
+
+document.querySelectorAll('.chart-btn').forEach(btn => {
+  btn.addEventListener('click', () => openChart(btn.dataset.chart));
+});
+document.getElementById('chart-modal-close').addEventListener('click', closeChart);
+document.getElementById('chart-modal-backdrop').addEventListener('click', closeChart);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeChart(); });
 
 // ── Fetch all data ───────────────────────────────────────────────────────────
 async function fetchAndUpdate() {
