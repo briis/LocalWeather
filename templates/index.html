@@ -21,11 +21,21 @@
   <link rel="manifest" href="/static/manifest.json" />
 
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <script>
+    (function () {
+      var p = localStorage.getItem('theme') || 'auto';
+      document.documentElement.dataset.theme =
+        p === 'auto' ? (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark') : p;
+    }());
+  </script>
 </head>
 <body>
   <div class="weather-app" id="app">
 
-    <button class="lang-toggle" id="lang-toggle">DA</button>
+    <div class="ui-controls">
+      <button class="theme-toggle" id="theme-toggle">⊙</button>
+      <button class="lang-toggle" id="lang-toggle">DA</button>
+    </div>
 
     <!-- Hero -->
     <header class="hero">

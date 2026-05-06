@@ -104,6 +104,23 @@ const translations = {
   },
 };
 
+// ── Theme state ─────────────────────────────────────────────────────────────
+let themePref = localStorage.getItem('theme') || 'auto';
+const osLight = window.matchMedia('(prefers-color-scheme: light)');
+
+function applyTheme(pref) {
+  themePref = pref;
+  localStorage.setItem('theme', pref);
+  const applied = pref === 'auto' ? (osLight.matches ? 'light' : 'dark') : pref;
+  document.documentElement.dataset.theme = applied;
+  const btn = document.getElementById('theme-toggle');
+  if (btn) btn.textContent = pref === 'auto' ? '⊙' : pref === 'light' ? '☀' : '☾';
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.content = applied === 'light' ? '#bdd8f0' : '#0d2444';
+}
+
+osLight.addEventListener('change', () => { if (themePref === 'auto') applyTheme('auto'); });
+
 // ── Language state ──────────────────────────────────────────────────────────
 let currentLang = localStorage.getItem('lang') || 'da';
 
@@ -420,6 +437,12 @@ async function fetchAndUpdate() {
 }
 
 // ── Boot ────────────────────────────────────────────────────────────────────
+document.getElementById('theme-toggle').addEventListener('click', () => {
+  applyTheme(themePref === 'auto' ? 'light' : themePref === 'light' ? 'dark' : 'auto');
+});
+
+applyTheme(themePref);
+
 document.getElementById('lang-toggle').addEventListener('click', () => {
   currentLang = currentLang === 'en' ? 'da' : 'en';
   localStorage.setItem('lang', currentLang);

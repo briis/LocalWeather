@@ -1,13 +1,53 @@
 /* cSpell:words precip */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* ── Dark theme (default) ───────────────────────────────── */
 :root {
-  --glass: rgba(255,255,255,0.12);
+  --glass:        rgba(255,255,255,0.12);
   --glass-border: rgba(255,255,255,0.18);
-  --text: #ffffff;
-  --text-dim: rgba(255,255,255,0.65);
-  --accent: #4fc3f7;
-  --radius: 20px;
+  --glass-hover:  rgba(255,255,255,0.22);
+  --text:         #ffffff;
+  --text-dim:     rgba(255,255,255,0.65);
+  --text-faint:   rgba(255,255,255,0.40);
+  --accent:       #4fc3f7;
+  --radius:       20px;
+  --body-bg:      linear-gradient(160deg, #1a3a6b 0%, #0d2444 35%, #1a2f5a 65%, #0a1a33 100%);
+  --gauge-track:  rgba(255,255,255,0.10);
+  --gauge-text:   #ffffff;
+  --sun-arc:      rgba(255,255,255,0.30);
+  --sun-horizon:  rgba(255,255,255,0.20);
+  --moon-shadow:  rgba(255,255,255,0.08);
+  --moon-lit:     rgba(255,255,255,0.88);
+  --bar-track:    rgba(255,255,255,0.15);
+  --compass-bg:   rgba(255,255,255,0.06);
+  --uv-mask:      rgba(0,0,0,0.50);
+  --needle-tail:  rgba(255,255,255,0.30);
+}
+
+/* ── Light theme ────────────────────────────────────────── */
+html[data-theme="light"] .wi {
+  filter: drop-shadow(0 1px 4px rgba(28,46,74,0.40)) saturate(1.15);
+}
+
+html[data-theme="light"] {
+  --glass:        rgba(255,255,255,0.55);
+  --glass-border: rgba(255,255,255,0.80);
+  --glass-hover:  rgba(255,255,255,0.75);
+  --text:         #1c2e4a;
+  --text-dim:     rgba(28,46,74,0.60);
+  --text-faint:   rgba(28,46,74,0.40);
+  --accent:       #0071e3;
+  --body-bg:      linear-gradient(160deg, #d0e8f8 0%, #bdd8f0 35%, #cce3f6 65%, #deeef8 100%);
+  --gauge-track:  rgba(28,46,74,0.12);
+  --gauge-text:   #1c2e4a;
+  --sun-arc:      rgba(28,46,74,0.20);
+  --sun-horizon:  rgba(28,46,74,0.15);
+  --moon-shadow:  rgba(28,46,74,0.12);
+  --moon-lit:     rgba(255,255,255,0.95);
+  --bar-track:    rgba(28,46,74,0.12);
+  --compass-bg:   rgba(28,46,74,0.05);
+  --uv-mask:      rgba(255,255,255,0.55);
+  --needle-tail:  rgba(28,46,74,0.25);
 }
 
 html, body {
@@ -17,7 +57,7 @@ html, body {
 }
 
 body {
-  background: linear-gradient(160deg, #1a3a6b 0%, #0d2444 35%, #1a2f5a 65%, #0a1a33 100%);
+  background: var(--body-bg);
   min-height: 100vh;
 }
 
@@ -30,12 +70,19 @@ body {
 .hero-icon-wrap { display: flex; justify-content: center; }
 .rain-icon { display: flex; justify-content: center; margin-bottom: 4px; }
 
-/* ── Language toggle ────────────────────────────────── */
-.lang-toggle {
+/* ── Controls (language + theme toggles) ────────────────── */
+.ui-controls {
   position: fixed;
   top: max(16px, env(safe-area-inset-top));
   right: max(16px, env(safe-area-inset-right));
   z-index: 100;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.lang-toggle,
+.theme-toggle {
   background: var(--glass);
   border: 1px solid var(--glass-border);
   border-radius: 20px;
@@ -51,8 +98,9 @@ body {
   transition: background 0.2s;
 }
 
-.lang-toggle:hover {
-  background: rgba(255,255,255,0.22);
+.lang-toggle:hover,
+.theme-toggle:hover {
+  background: var(--glass-hover);
 }
 
 /* ── Hero ───────────────────────────────────────────── */
@@ -81,9 +129,7 @@ body {
   color: var(--text-dim);
 }
 
-.temp-hero {
-  margin: 0;
-}
+.temp-hero { margin: 0; }
 
 .temp-now {
   font-size: clamp(5rem, 18vw, 8rem);
@@ -112,7 +158,7 @@ body {
 .last-updated {
   margin-top: 8px;
   font-size: 0.75rem;
-  color: rgba(255,255,255,0.4);
+  color: var(--text-faint);
 }
 
 /* ── Grid ───────────────────────────────────────────── */
@@ -151,9 +197,7 @@ body {
   align-items: center;
 }
 
-.wind-compass {
-  margin: 4px 0 12px;
-}
+.wind-compass { margin: 4px 0 12px; }
 
 .compass-ring {
   position: relative;
@@ -161,7 +205,7 @@ body {
   height: 100px;
   border-radius: 50%;
   border: 2px solid var(--glass-border);
-  background: rgba(255,255,255,0.06);
+  background: var(--compass-bg);
 }
 
 .compass-pt {
@@ -182,7 +226,7 @@ body {
   height: 38px;
   margin-left: -2px;
   margin-top: -34px;
-  background: linear-gradient(to bottom, #ef5350 50%, rgba(255,255,255,0.3) 50%);
+  background: linear-gradient(to bottom, #ef5350 50%, var(--needle-tail) 50%);
   border-radius: 2px;
   transform-origin: bottom center;
   transition: transform 0.6s ease;
@@ -230,7 +274,7 @@ body {
 
 .gauge-bg {
   fill: none;
-  stroke: rgba(255,255,255,0.1);
+  stroke: var(--gauge-track);
   stroke-width: 10;
 }
 
@@ -245,7 +289,7 @@ body {
 }
 
 .gauge-text {
-  fill: white;
+  fill: var(--gauge-text);
   font-size: 18px;
   font-weight: 300;
   font-family: inherit;
@@ -283,7 +327,7 @@ body {
 .uv-fill {
   position: absolute;
   right: 0; top: 0; bottom: 0;
-  background: rgba(0,0,0,0.5);
+  background: var(--uv-mask);
   transition: width 0.6s ease;
 }
 
@@ -304,13 +348,13 @@ body {
 
 .sun-arc-path {
   fill: none;
-  stroke: rgba(255,255,255,0.3);
+  stroke: var(--sun-arc);
   stroke-width: 2;
   stroke-dasharray: 5 4;
 }
 
 .sun-horizon {
-  stroke: rgba(255,255,255,0.2);
+  stroke: var(--sun-horizon);
   stroke-width: 1;
 }
 
@@ -333,9 +377,9 @@ body {
   margin-top: 4px;
 }
 
-.moon-svg { width: 72px; height: 72px; flex-shrink: 0; }
-.moon-shadow { fill: rgba(255,255,255,0.08); }
-.moon-lit    { fill: rgba(255,255,255,0.88); }
+.moon-svg    { width: 72px; height: 72px; flex-shrink: 0; }
+.moon-shadow { fill: var(--moon-shadow); }
+.moon-lit    { fill: var(--moon-lit); }
 
 .moon-stats { display: flex; flex-direction: column; gap: 12px; }
 
@@ -368,16 +412,8 @@ body {
   margin-top: 8px;
 }
 
-.aqi-number {
-  font-size: 2rem;
-  font-weight: 200;
-  line-height: 1;
-}
-
-.aqi-category {
-  font-size: 0.85rem;
-  font-weight: 400;
-}
+.aqi-number  { font-size: 2rem; font-weight: 200; line-height: 1; }
+.aqi-category { font-size: 0.85rem; font-weight: 400; }
 
 .aqi-row {
   display: flex;
@@ -395,8 +431,7 @@ body {
 }
 
 .aqi-value { font-size: 1.8rem; font-weight: 200; line-height: 1.1; margin-top: 4px; }
-
-.aqi-unit { font-size: 0.65rem; color: var(--text-dim); }
+.aqi-unit  { font-size: 0.65rem; color: var(--text-dim); }
 
 /* ── Hourly strip ────────────────────────────────────── */
 .hourly-section {
@@ -424,23 +459,10 @@ body {
   flex-shrink: 0;
 }
 
-.hour-time {
-  font-size: 0.8rem;
-  color: var(--text-dim);
-  font-weight: 500;
-}
-
-.hour-precip {
-  font-size: 0.65rem;
-  color: #5AC8FA;
-  font-weight: 600;
-  min-height: 0.9rem;
-  line-height: 1;
-}
-
-.hour-icon { font-size: 1.4rem; line-height: 1; }
-
-.hour-temp { font-size: 0.9rem; font-weight: 300; }
+.hour-time   { font-size: 0.8rem; color: var(--text-dim); font-weight: 500; }
+.hour-precip { font-size: 0.65rem; color: #5AC8FA; font-weight: 600; min-height: 0.9rem; line-height: 1; }
+.hour-icon   { font-size: 1.4rem; line-height: 1; }
+.hour-temp   { font-size: 0.9rem; font-weight: 300; }
 
 /* ── Daily forecast ──────────────────────────────────── */
 .card-daily { grid-column: 1 / -1; }
@@ -459,19 +481,8 @@ body {
   padding: 9px 0;
 }
 
-.daily-day {
-  width: 52px;
-  font-size: 1rem;
-  font-weight: 400;
-  flex-shrink: 0;
-}
-
-.daily-icon {
-  font-size: 1.3rem;
-  width: 28px;
-  text-align: center;
-  flex-shrink: 0;
-}
+.daily-day  { width: 52px; font-size: 1rem; font-weight: 400; flex-shrink: 0; }
+.daily-icon { font-size: 1.3rem; width: 28px; text-align: center; flex-shrink: 0; }
 
 .daily-low {
   width: 34px;
@@ -485,7 +496,7 @@ body {
   flex: 1;
   height: 4px;
   border-radius: 2px;
-  background: rgba(255,255,255,0.15);
+  background: var(--bar-track);
   position: relative;
   min-width: 60px;
 }
@@ -498,17 +509,8 @@ body {
   background: linear-gradient(to right, #5AC8FA, #66BB6A, #FFCA28, #FF9500);
 }
 
-.daily-high {
-  width: 34px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  flex-shrink: 0;
-}
-
-.daily-divider {
-  height: 1px;
-  background: var(--glass-border);
-}
+.daily-high    { width: 34px; font-size: 0.9rem; font-weight: 500; flex-shrink: 0; }
+.daily-divider { height: 1px; background: var(--glass-border); }
 
 /* ── Responsive ─────────────────────────────────────── */
 @media (max-width: 680px) {
