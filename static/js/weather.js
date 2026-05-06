@@ -367,8 +367,12 @@ function updatePage(d) {
   const feelsLike = d.heatindex != null ? d.heatindex : d.windchill;
   setEl('feels-like', feelsLike != null ? `${fmtInt(feelsLike)}°` : '—');
 
-  const pressureEl = document.getElementById('pressure');
-  if (pressureEl) pressureEl.innerHTML = `${fmt(d.sealevelpressure)} <span class="unit">hPa</span>`;
+  const pressureArc = document.getElementById('pressure-arc');
+  if (pressureArc && d.sealevelpressure != null) {
+    const frac = Math.min(1, Math.max(0, (d.sealevelpressure - 960) / 100));
+    pressureArc.setAttribute('stroke-dasharray', `${(frac * 169.65).toFixed(1)} 169.65`);
+  }
+  setEl('pressure-val', d.sealevelpressure != null ? fmt(d.sealevelpressure) : '—');
 
   const trendEl = document.getElementById('pressure-trend');
   if (trendEl) trendEl.innerHTML = pressureTrendHtml(d.pressuretrend);

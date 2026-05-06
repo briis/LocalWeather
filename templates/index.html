@@ -169,9 +169,22 @@
       </div>
 
       <!-- Pressure -->
+      {% set p_raw = data.sealevelpressure if data and data.sealevelpressure is not none else 1013 %}
+      {% set p_frac = [[[(p_raw - 960) / 100, 0]|max, 1]|min] | first %}
+      {% set p_dash = (p_frac * 169.65) | round(1) %}
       <div class="card card-pressure">
         <div class="card-label" data-i18n="pressure">PRESSURE</div>
-        <div class="metric-big" id="pressure">{{ '%.1f'|format(data.sealevelpressure) if data and data.sealevelpressure is not none else '—' }} <span class="unit">hPa</span></div>
+        <div class="pressure-gauge">
+          <svg viewBox="0 0 120 68" class="pressure-gauge-svg">
+            <path d="M 6,63 A 54,54 0 0 1 114,63" class="pressure-track" pathLength="169.65"/>
+            <path d="M 6,63 A 54,54 0 0 1 114,63" class="pressure-fill" id="pressure-arc"
+              pathLength="169.65" stroke-dasharray="{{ p_dash }} 169.65"/>
+            <text x="60" y="45" text-anchor="middle" class="gauge-text" id="pressure-val">{{ '%.1f'|format(data.sealevelpressure) if data and data.sealevelpressure is not none else '—' }}</text>
+            <text x="60" y="56" text-anchor="middle" class="pressure-gauge-unit">hPa</text>
+            <text x="4"   y="76" class="pressure-scale-label">960</text>
+            <text x="116" y="76" text-anchor="end" class="pressure-scale-label">1060</text>
+          </svg>
+        </div>
         <div class="pressure-trend" id="pressure-trend">
           {% if data and data.pressuretrend is not none %}
             {% if data.pressuretrend > 0 %}↑ <span data-i18n="rising">Rising</span>{% elif data.pressuretrend < 0 %}↓ <span data-i18n="falling">Falling</span>{% else %}→ <span data-i18n="steady">Steady</span>{% endif %}
