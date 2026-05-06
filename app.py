@@ -306,9 +306,21 @@ def api_daily():
 
 
 _HISTORY_FIELDS = {
-    "temperature", "wind_chill", "heat_index", "humidity", "dewpoint",
-    "rain_rate", "rain_day", "wind_speed", "wind_gust", "pressure",
-    "uv", "solar_radiation", "air_Quality_pm1", "air_Quality_pm10", "air_Quality_pm25",
+    "temperature",
+    "wind_chill",
+    "heat_index",
+    "humidity",
+    "dewpoint",
+    "rain_rate",
+    "rain_day",
+    "wind_speed",
+    "wind_gust",
+    "pressure",
+    "uv",
+    "solar_radiation",
+    "air_Quality_pm1",
+    "air_Quality_pm10",
+    "air_Quality_pm25",
 }
 
 

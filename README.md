@@ -1,6 +1,6 @@
 # LocalWeather
 
-<!-- cSpell:words gunicorn pytz localweather Meteocons Glassmorphism WSGI forecas -->
+<!-- cSpell:words gunicorn pytz localweather Meteocons Glassmorphism WSGI forecas chartjs jsdelivr uvsolar airquality -->
 
 A responsive, Apple Weather-inspired dashboard that reads real-time data from a local MySQL database and displays it in a browser or as an iOS/Android home screen web app.
 
@@ -13,6 +13,9 @@ A responsive, Apple Weather-inspired dashboard that reads real-time data from a 
 - **14-day forecast** — vertically scrollable daily strip with temperature range bars
 - **Sunrise & sunset** — animated arc showing the sun's current position through the day
 - **Moon phase** — SVG phase graphic, illumination percentage, and days to next full moon
+- **Pressure gauge** — semi-circular speedometer-style arc gauge for barometric pressure
+- **36-hour history charts** — every non-forecast widget has a chart button that opens a modal popup with a Chart.js time-series graph drawn from `minute_data`
+- **Light / dark / auto theme** — follows OS preference automatically, with a manual toggle (⊙ → ☀ → ☾) that persists in `localStorage`
 - **EN / DA language toggle** — all widget labels and values switch between English and Danish, preference saved in `localStorage`
 - **PWA / iOS web app** — installable on iPhone/iPad, supports `viewport-fit=cover` and safe-area insets
 - **Auto-refresh** — data updates every 60 seconds without a page reload
@@ -27,12 +30,14 @@ A responsive, Apple Weather-inspired dashboard that reads real-time data from a 
 MySQL (weather_history)
   ├── realtime_data      ← live station readings
   ├── forecast_hourly    ← 72-hour hourly forecast
-  └── forecast_daily     ← 14-day daily forecast
+  ├── forecast_daily     ← 14-day daily forecast
+  └── minute_data        ← per-minute history (36-hour chart source)
 
 Flask (app.py)  →  Jinja2 template  →  Browser
                 →  /api/data        ← JS polled every 60 s
                 →  /api/hourly
                 →  /api/daily
+                →  /api/history     ← history charts (36 h of minute_data)
 ```
 
 ## Configuration
@@ -63,6 +68,7 @@ The app reads from three tables. Reference schemas are in [Docs/](Docs/).
 | `realtime_data` | Latest station reading (temperature, wind, rain, UV, AQI sensors, …) |
 | `forecast_hourly` | One row per forecast hour (`hour_num` 0–71, starting midnight local time) |
 | `forecast_daily` | One row per forecast day (`day_num` 0–13) |
+| `minute_data` | Per-minute historical readings, queried for the last 36 hours by `/api/history` |
 
 ## Development
 
@@ -154,6 +160,7 @@ The app will be served on **port 80** of the LXC's IP address.
 | `GET /api/data` | Latest realtime data as JSON, including AQI, sun, and moon |
 | `GET /api/hourly` | Hourly forecast (72 entries) as JSON |
 | `GET /api/daily` | Daily forecast (14 entries) as JSON |
+| `GET /api/history?fields=f1,f2` | Last 36 hours of `minute_data` for the requested fields as JSON. Allowed fields: `temperature`, `wind_chill`, `heat_index`, `humidity`, `dewpoint`, `rain_rate`, `rain_day`, `wind_speed`, `wind_gust`, `pressure`, `uv`, `solar_radiation`, `air_Quality_pm1`, `air_Quality_pm10`, `air_Quality_pm25` |
 
 ## Project Structure
 
@@ -165,8 +172,8 @@ LocalWeather/
 ├── templates/
 │   └── index.html          # Single-page Jinja2 template
 ├── static/
-│   ├── css/style.css       # Glassmorphism UI, responsive grid
-│   ├── js/weather.js       # Auto-refresh, language switching, forecast builders
+│   ├── css/style.css       # Glassmorphism UI, responsive grid, light/dark theme
+│   ├── js/weather.js       # Auto-refresh, language/theme switching, forecast builders, history charts
 │   ├── images/             # Meteocons PNG weather icons
 │   ├── favicon.svg
 │   └── manifest.json       # PWA manifest
@@ -180,10 +187,11 @@ LocalWeather/
 ├── .ruff.toml              # Linter config
 ├── scripts/
 │   └── lint                # Run ruff format + check
-└── Docs/                   # Reference SQL schemas
+└── Docs/                   # Reference SQL schemas and example data
     ├── realtime_data_structure.sql
     ├── forecas_data_structure.sql
-    └── minute_data_structure.sql
+    ├── minute_data_structure.sql
+    └── example_minute_data.json
 ```
 
 ## Dependencies
@@ -195,6 +203,13 @@ LocalWeather/
 | `astral` | Sunrise / sunset and moon phase calculations |
 | `pytz` | Timezone-aware datetime handling |
 | `gunicorn` | Production WSGI server (installed by deploy script) |
+
+### Frontend libraries (CDN, no install required)
+
+| Library | Version | Purpose |
+| --- | --- | --- |
+| [Chart.js](https://www.chartjs.org/) | 4.4.4 | Time-series history charts |
+| [chartjs-adapter-date-fns](https://github.com/chartjs/chartjs-adapter-date-fns) | 3.0.0 | Date/time axis adapter for Chart.js |
 
 ## License
 
