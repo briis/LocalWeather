@@ -32,9 +32,38 @@ if [ -n "$REPO_URL" ]; then
     fi
 else
     echo "==> Copying files from current directory"
-    rsync -a --exclude='.git' --exclude='deploy' --exclude='.venv' \
+    rsync -a \
+        --exclude='.git' \
+        --exclude='.devcontainer' \
+        --exclude='.dockerignore' \
+        --exclude='.DS_Store' \
+        --exclude='.ruff.toml' \
+        --exclude='.ruff_cache' \
+        --exclude='.venv' \
+        --exclude='__pycache__' \
+        --exclude='deploy' \
+        --exclude='docker-compose.yml' \
+        --exclude='Dockerfile' \
+        --exclude='Docs' \
+        --exclude='LocalWeather.code-workspace' \
+        --exclude='scripts' \
         "$(dirname "$0")/../" "$APP_DIR/"
 fi
+
+echo "==> Removing dev-only files"
+rm -rf \
+    "$APP_DIR/.devcontainer" \
+    "$APP_DIR/.dockerignore" \
+    "$APP_DIR/.DS_Store" \
+    "$APP_DIR/.ruff.toml" \
+    "$APP_DIR/.ruff_cache" \
+    "$APP_DIR/deploy" \
+    "$APP_DIR/docker-compose.yml" \
+    "$APP_DIR/Dockerfile" \
+    "$APP_DIR/Docs" \
+    "$APP_DIR/LocalWeather.code-workspace" \
+    "$APP_DIR/scripts" \
+    "$APP_DIR/__pycache__"
 
 echo "==> Checking weather images"
 IMAGE_DIR="$APP_DIR/static/images"
