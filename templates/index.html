@@ -186,16 +186,18 @@
           <div class="card-label" data-i18n="pressure">PRESSURE</div>
           <button class="chart-btn" data-chart="pressure" aria-label="Show history chart"><svg width="14" height="12" viewBox="0 0 14 12" fill="currentColor" aria-hidden="true"><rect x="0" y="5" width="3" height="7" rx="0.5"/><rect x="4" y="1" width="3" height="11" rx="0.5"/><rect x="8" y="3" width="3" height="9" rx="0.5"/><rect x="12" y="6" width="2" height="6" rx="0.5"/></svg></button>
         </div>
-        <div class="pressure-gauge">
-          <svg viewBox="0 0 120 68" class="pressure-gauge-svg">
-            <path d="M 6,63 A 54,54 0 0 1 114,63" class="pressure-track" pathLength="169.65"/>
-            <path d="M 6,63 A 54,54 0 0 1 114,63" class="pressure-fill" id="pressure-arc"
-              pathLength="169.65" stroke-dasharray="{{ p_dash }} 169.65"/>
-            <text x="60" y="45" text-anchor="middle" class="gauge-text" id="pressure-val">{{ '%.1f'|format(data.sealevelpressure) if data and data.sealevelpressure is not none else '—' }}</text>
-            <text x="60" y="56" text-anchor="middle" class="pressure-gauge-unit">hPa</text>
-            <text x="4"   y="76" class="pressure-scale-label">960</text>
-            <text x="116" y="76" text-anchor="end" class="pressure-scale-label">1060</text>
-          </svg>
+        <div class="pressure-body">
+          <div class="pressure-gauge">
+            <svg viewBox="0 0 120 68" class="pressure-gauge-svg">
+              <path d="M 6,63 A 54,54 0 0 1 114,63" class="pressure-track" pathLength="169.65"/>
+              <path d="M 6,63 A 54,54 0 0 1 114,63" class="pressure-fill" id="pressure-arc"
+                pathLength="169.65" stroke-dasharray="{{ p_dash }} 169.65"/>
+              <text x="60" y="45" text-anchor="middle" class="gauge-text" id="pressure-val">{{ '%.1f'|format(data.sealevelpressure) if data and data.sealevelpressure is not none else '—' }}</text>
+              <text x="60" y="56" text-anchor="middle" class="pressure-gauge-unit">hPa</text>
+              <text x="4"   y="83" class="pressure-scale-label">960</text>
+              <text x="116" y="83" text-anchor="end" class="pressure-scale-label">1060</text>
+            </svg>
+          </div>
         </div>
         <div class="pressure-trend" id="pressure-trend">
           {% if data and data.pressuretrend is not none %}

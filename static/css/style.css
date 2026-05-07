@@ -64,7 +64,7 @@ body {
 /* ── Weather icons (PNG) ─────────────────────────────── */
 .wi { display: block; object-fit: contain; }
 .wi-sm   { width: 32px;  height: 32px;  }
-.wi-lg   { width: 64px;  height: 64px;  }
+.wi-lg   { width: 72px;  height: 72px;  }
 .wi-hero { width: 120px; height: 120px; }
 
 .hero-icon-wrap { display: flex; justify-content: center; }
@@ -340,6 +340,7 @@ body {
 
 /* ── Rain card ──────────────────────────────────────── */
 .rain-icon { font-size: 2rem; margin-bottom: 4px; }
+.rain-icon .wi { width: 96px; height: 96px; }
 
 /* ── Metric helpers ─────────────────────────────────── */
 .metric-big {
@@ -398,9 +399,16 @@ body {
 }
 
 /* ── Pressure gauge ─────────────────────────────────── */
-.pressure-gauge { display: flex; justify-content: center; margin-bottom: 20px; }
+.pressure-body {
+  display: flex;
+  flex-direction: column;
+  max-width: 170px;
+  margin: 0 auto 14px;
+}
 
-.pressure-gauge-svg { width: 100%; max-width: 200px; overflow: visible; }
+.pressure-gauge { margin-bottom: 0; }
+
+.pressure-gauge-svg { width: 100%; overflow: visible; }
 
 .pressure-track {
   fill: none;
@@ -432,7 +440,7 @@ body {
 .pressure-trend {
   font-size: 0.9rem;
   color: var(--accent);
-  margin-top: 4px;
+  padding-top: 8px;
 }
 
 /* ── UV ─────────────────────────────────────────────── */
