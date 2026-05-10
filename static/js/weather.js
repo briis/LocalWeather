@@ -45,6 +45,7 @@ const translations = {
     next_full_moon:  'Next full moon',
     days:            'days',
     pollen_forecast: 'Pollen Forecast',
+    pollen_today:    'Pollen Today',
     pollen_none:     'No active pollen',
     pollen_out_of_season: 'Out of season',
     pollen_severity: {
@@ -99,6 +100,7 @@ const translations = {
     next_full_moon:  'Næste fuldmåne',
     days:            'dage',
     pollen_forecast: 'Pollenprognose',
+    pollen_today:    'Pollen i dag',
     pollen_none:     'Ingen aktiv pollen',
     pollen_out_of_season: 'Ude af sæson',
     pollen_severity: {
@@ -643,10 +645,11 @@ function buildPollenWidget(days) {
     days.some(d => ACTIVE_SEVERITIES.has(d[`${pt.key}_severity`]))
   );
 
-  const title = `<button class="pollen-title pollen-title-btn" id="pollen-open-btn" aria-haspopup="dialog" data-i18n="pollen_forecast">${t.pollen_forecast}</button>`;
+  const infoIcon = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="8" cy="8" r="7"/><line x1="8" y1="7" x2="8" y2="11" stroke-linecap="round"/><circle cx="8" cy="5" r="0.5" fill="currentColor" stroke="none"/></svg>`;
+  const header = `<div class="card-head"><div class="card-label">${t.pollen_forecast.toUpperCase()}</div><button class="chart-btn" id="pollen-open-btn" aria-haspopup="dialog" aria-label="Show today's pollen">${infoIcon}</button></div>`;
 
   if (!days.length || !activeTypes.length) {
-    container.innerHTML = `${title}<div class="pollen-empty">${t.pollen_none}</div>`;
+    container.innerHTML = `${header}<div class="pollen-empty">${t.pollen_none}</div>`;
     document.getElementById('pollen-open-btn')?.addEventListener('click', openPollenModal);
     return;
   }
@@ -675,7 +678,7 @@ function buildPollenWidget(days) {
   }).join('');
 
   container.innerHTML = `
-    ${title}
+    ${header}
     <div class="pollen-header">
       <div class="pollen-name-col"></div>
       ${dayHeaders}
@@ -746,7 +749,7 @@ function openPollenModal() {
   const today = _pollenDays[0];
   const grid = document.getElementById('pollen-modal-grid');
   grid.innerHTML = POLLEN_TYPES.map(pt => pollenGaugeCard(pt.key, today, t)).join('');
-  document.getElementById('pollen-modal-title').textContent = t.pollen_forecast;
+  document.getElementById('pollen-modal-title').textContent = t.pollen_today;
   modal.hidden = false;
   document.body.style.overflow = 'hidden';
 }

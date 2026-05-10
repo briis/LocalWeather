@@ -109,7 +109,10 @@
       <!-- Pollen forecast -->
       {% if pollen and pollen_active %}
       <div class="card card-pollen" id="pollen-widget">
-        <button class="pollen-title pollen-title-btn" id="pollen-open-btn" aria-haspopup="dialog" data-i18n="pollen_forecast">Pollenprognose</button>
+        <div class="card-head">
+          <div class="card-label" data-i18n="pollen_forecast">POLLENPROGNOSE</div>
+          <button class="chart-btn" id="pollen-open-btn" aria-haspopup="dialog" aria-label="Show today's pollen"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="8" cy="8" r="7"/><line x1="8" y1="7" x2="8" y2="11" stroke-linecap="round"/><circle cx="8" cy="5" r="0.5" fill="currentColor" stroke="none"/></svg></button>
+        </div>
         <div class="pollen-header">
           <div class="pollen-name-col"></div>
           {% for day in pollen %}
@@ -385,7 +388,7 @@
     <div class="pollen-modal-backdrop" id="pollen-modal-backdrop"></div>
     <div class="pollen-modal-box">
       <div class="pollen-modal-header">
-        <span class="pollen-modal-title" id="pollen-modal-title">Pollenprognose</span>
+        <span class="pollen-modal-title" id="pollen-modal-title">Pollen i dag</span>
         <button class="chart-modal-close" id="pollen-modal-close" aria-label="Close">✕</button>
       </div>
       <div class="pollen-modal-grid" id="pollen-modal-grid"></div>

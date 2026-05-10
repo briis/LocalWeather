@@ -656,12 +656,6 @@ body {
 /* ── Pollen card ─────────────────────────────────────── */
 .card-pollen { grid-column: 1 / -1; }
 
-.pollen-title {
-  font-size: 1.1rem;
-  font-weight: 700;
-  margin-bottom: 16px;
-}
-
 .pollen-header {
   display: flex;
   align-items: center;
@@ -723,28 +717,6 @@ body {
 .pollen-unknown   { background: var(--gauge-track); }
 
 .pollen-divider { height: 8px; }
-
-.pollen-title-btn {
-  background: none;
-  border: none;
-  color: inherit;
-  font-family: inherit;
-  font-size: 1.1rem;
-  font-weight: 700;
-  margin-bottom: 16px;
-  cursor: pointer;
-  padding: 0;
-  text-align: left;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.pollen-title-btn::after {
-  content: '›';
-  font-size: 1.2rem;
-  opacity: 0.55;
-}
-.pollen-title-btn:hover { opacity: 0.8; }
 
 /* ── Pollen detail modal ─────────────────────────────── */
 .pollen-modal {
