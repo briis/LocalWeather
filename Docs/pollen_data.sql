@@ -1,0 +1,25 @@
+CREATE TABLE `pollen_data` ( 
+  `id` INT UNSIGNED AUTO_INCREMENT NOT NULL,
+  `region` VARCHAR(20) NOT NULL,
+  `date` DATE NOT NULL,
+  `birk_count` SMALLINT NULL DEFAULT NULL ,
+  `birk_severity` VARCHAR(10) NULL DEFAULT NULL ,
+  `bynke_count` SMALLINT NULL DEFAULT NULL ,
+  `bynke_severity` VARCHAR(10) NULL DEFAULT NULL ,
+  `el_count` SMALLINT NULL DEFAULT NULL ,
+  `el_severity` VARCHAR(10) NULL DEFAULT NULL ,
+  `elm_count` SMALLINT NULL DEFAULT NULL ,
+  `elm_severity` VARCHAR(10) NULL DEFAULT NULL ,
+  `graes_count` SMALLINT NULL DEFAULT NULL ,
+  `graes_severity` VARCHAR(10) NULL DEFAULT NULL ,
+  `hassel_count` SMALLINT NULL DEFAULT NULL ,
+  `hassel_severity` VARCHAR(10) NULL DEFAULT NULL ,
+  `alternaria_count` MEDIUMINT NULL DEFAULT NULL ,
+  `alternaria_severity` VARCHAR(10) NULL DEFAULT NULL ,
+  `cladosporium_count` INT NULL DEFAULT NULL ,
+  `cladosporium_severity` VARCHAR(10) NULL DEFAULT NULL ,
+  `updated_at` TIMESTAMP NULL DEFAULT 'current_timestamp()' ,
+   PRIMARY KEY (`id`),
+  CONSTRAINT `region_date` UNIQUE (`region`, `date`)
+)
+ENGINE = InnoDB;
