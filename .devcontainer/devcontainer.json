@@ -13,12 +13,6 @@
   "features": {
     "ghcr.io/devcontainers/features/git:1": {}
   },
-  "remoteEnv": {
-    "SSH_AUTH_SOCK": "/ssh-agent"
-  },
-  "mounts": [
-    "source=${localEnv:SSH_AUTH_SOCK},target=/ssh-agent,type=bind"
-  ],
   "customizations": {
     "vscode": {
       "extensions": [
