@@ -46,6 +46,10 @@ const translations = {
     days:            'days',
     pollen_forecast: 'Pollen Forecast',
     pollen_none:     'No active pollen',
+    pollen_out_of_season: 'Out of season',
+    pollen_severity: {
+      none: 'Out of season', low: 'Low', moderate: 'Moderate', high: 'High', very_high: 'Very high', unknown: 'Unknown',
+    },
     pollen_types: {
       birk: 'Birch', bynke: 'Mugwort', el: 'Alder', elm: 'Elm',
       graes: 'Grass', hassel: 'Hazel', alternaria: 'Alternaria', cladosporium: 'Cladosporium',
@@ -96,6 +100,10 @@ const translations = {
     days:            'dage',
     pollen_forecast: 'Pollenprognose',
     pollen_none:     'Ingen aktiv pollen',
+    pollen_out_of_season: 'Ude af sæson',
+    pollen_severity: {
+      none: 'Ude af sæson', low: 'Lavt', moderate: 'Moderat', high: 'Højt', very_high: 'Meget højt', unknown: 'Ukendt',
+    },
     pollen_types: {
       birk: 'Birk', bynke: 'Bynke', el: 'El', elm: 'Elm',
       graes: 'Græs', hassel: 'Hassel', alternaria: 'Alternaria', cladosporium: 'Cladosporium',
@@ -610,7 +618,7 @@ document.querySelectorAll('.chart-btn').forEach(btn => {
 });
 document.getElementById('chart-modal-close').addEventListener('click', closeChart);
 document.getElementById('chart-modal-backdrop').addEventListener('click', closeChart);
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeChart(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeChart(); closePollenModal(); } });
 
 // ── Pollen widget ────────────────────────────────────────────────────────────
 const POLLEN_TYPES = [
@@ -635,10 +643,11 @@ function buildPollenWidget(days) {
     days.some(d => ACTIVE_SEVERITIES.has(d[`${pt.key}_severity`]))
   );
 
-  const title = `<div class="pollen-title" data-i18n="pollen_forecast">${t.pollen_forecast}</div>`;
+  const title = `<button class="pollen-title pollen-title-btn" id="pollen-open-btn" aria-haspopup="dialog" data-i18n="pollen_forecast">${t.pollen_forecast}</button>`;
 
   if (!days.length || !activeTypes.length) {
     container.innerHTML = `${title}<div class="pollen-empty">${t.pollen_none}</div>`;
+    document.getElementById('pollen-open-btn')?.addEventListener('click', openPollenModal);
     return;
   }
 
@@ -672,7 +681,85 @@ function buildPollenWidget(days) {
       ${dayHeaders}
     </div>
     ${rows}`;
+  document.getElementById('pollen-open-btn')?.addEventListener('click', openPollenModal);
 }
+
+// ── Pollen detail popup ──────────────────────────────────────────────────────
+const POLLEN_ARC_LEN = Math.PI * 38; // half-circumference for r=38
+
+const SEVERITY_COLORS = {
+  low:      '#a8d5a2',
+  moderate: '#ffd54f',
+  high:     '#ff9800',
+  very_high:'#ef5350',
+};
+
+const SEVERITY_FILL = {
+  none:      0,
+  low:       0.22,
+  moderate:  0.50,
+  high:      0.75,
+  very_high: 1.0,
+  unknown:   0,
+};
+
+function pollenGaugeCard(key, today, t) {
+  const name    = t.pollen_types?.[key] ?? key;
+  const sev     = today[`${key}_severity`] || 'none';
+  const count   = today[`${key}_count`];
+  const isOut   = !ACTIVE_SEVERITIES.has(sev);
+  const fill    = SEVERITY_FILL[sev] ?? 0;
+  const filled  = fill * POLLEN_ARC_LEN;
+  const color   = SEVERITY_COLORS[sev] || 'var(--gauge-track)';
+  const sevLabel = t.pollen_severity?.[sev] ?? sev;
+
+  const centerContent = isOut
+    ? `<span class="pollen-gauge-dash">—</span>`
+    : `<span class="pollen-gauge-value">${count != null ? count : '—'}</span>`;
+
+  return `
+    <div class="pollen-gauge-card">
+      <div class="pollen-gauge-name">${name}</div>
+      <div class="pollen-gauge-wrap">
+        <svg class="pollen-gauge-svg" viewBox="0 0 100 58" aria-hidden="true">
+          <path class="pollen-gauge-track" d="M 12,50 A 38,38 0 0,1 88,50"
+            fill="none" stroke-width="9" stroke-linecap="round"/>
+          <path class="pollen-gauge-fill" d="M 12,50 A 38,38 0 0,1 88,50"
+            fill="none" stroke="${color}" stroke-width="9" stroke-linecap="round"
+            stroke-dasharray="${filled.toFixed(1)} ${POLLEN_ARC_LEN.toFixed(1)}"
+            stroke-dashoffset="0"/>
+        </svg>
+        <div class="pollen-gauge-center">
+          ${centerContent}
+        </div>
+      </div>
+      <div class="pollen-gauge-label">${sevLabel}</div>
+    </div>`;
+}
+
+let _pollenDays = null;
+
+function openPollenModal() {
+  const modal = document.getElementById('pollen-modal');
+  if (!modal || !_pollenDays || !_pollenDays.length) return;
+  const t = translations[currentLang];
+  const today = _pollenDays[0];
+  const grid = document.getElementById('pollen-modal-grid');
+  grid.innerHTML = POLLEN_TYPES.map(pt => pollenGaugeCard(pt.key, today, t)).join('');
+  document.getElementById('pollen-modal-title').textContent = t.pollen_forecast;
+  modal.hidden = false;
+  document.body.style.overflow = 'hidden';
+}
+
+function closePollenModal() {
+  const modal = document.getElementById('pollen-modal');
+  if (modal) modal.hidden = true;
+  document.body.style.overflow = '';
+}
+
+document.getElementById('pollen-modal-close')?.addEventListener('click', closePollenModal);
+document.getElementById('pollen-modal-backdrop')?.addEventListener('click', closePollenModal);
+document.getElementById('pollen-open-btn')?.addEventListener('click', openPollenModal);
 
 // ── Fetch all data ───────────────────────────────────────────────────────────
 async function fetchAndUpdate() {
@@ -686,7 +773,7 @@ async function fetchAndUpdate() {
     if (dataRes.ok)   updatePage(await dataRes.json());
     if (hourlyRes.ok) buildHourlyStrip(await hourlyRes.json());
     if (dailyRes.ok)  buildDailyForecast(await dailyRes.json());
-    if (pollenRes.ok) buildPollenWidget(await pollenRes.json());
+    if (pollenRes.ok) { _pollenDays = await pollenRes.json(); buildPollenWidget(_pollenDays); }
   } catch (e) {
     console.warn('Weather fetch failed:', e);
   }

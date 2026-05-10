@@ -724,6 +724,149 @@ body {
 
 .pollen-divider { height: 8px; }
 
+.pollen-title-btn {
+  background: none;
+  border: none;
+  color: inherit;
+  font-family: inherit;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.pollen-title-btn::after {
+  content: '›';
+  font-size: 1.2rem;
+  opacity: 0.55;
+}
+.pollen-title-btn:hover { opacity: 0.8; }
+
+/* ── Pollen detail modal ─────────────────────────────── */
+.pollen-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: max(20px, env(safe-area-inset-top))
+           max(20px, env(safe-area-inset-right))
+           max(20px, env(safe-area-inset-bottom))
+           max(20px, env(safe-area-inset-left));
+}
+.pollen-modal[hidden] { display: none; }
+
+.pollen-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.pollen-modal-box {
+  position: relative;
+  z-index: 1;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 24px;
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.pollen-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.pollen-modal-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+.pollen-modal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.pollen-gauge-card {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 14px 12px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pollen-gauge-name {
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+  text-align: center;
+}
+
+.pollen-gauge-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 130px;
+}
+
+.pollen-gauge-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.pollen-gauge-track { stroke: var(--gauge-track); }
+.pollen-gauge-fill  { transition: stroke-dasharray 0.4s ease; }
+
+.pollen-gauge-center {
+  position: absolute;
+  bottom: 4px;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.1;
+}
+
+.pollen-gauge-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--gauge-text);
+}
+
+.pollen-gauge-dash {
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: var(--text-dim);
+}
+
+.pollen-gauge-label {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  margin-top: 2px;
+  text-align: center;
+}
+
 /* ── Responsive ─────────────────────────────────────── */
 @media (max-width: 680px) {
   .cards-grid { grid-template-columns: 1fr; gap: 12px; padding: 0 12px 32px; }
