@@ -40,10 +40,16 @@ const translations = {
     now:            'Now',
     today_short:    'Today',
     dir_n: 'N', dir_e: 'E', dir_s: 'S', dir_w: 'W',
-    sunrise_sunset: 'SUNRISE & SUNSET',
-    illumination:   'Illumination',
-    next_full_moon: 'Next full moon',
-    days:           'days',
+    sunrise_sunset:  'SUNRISE & SUNSET',
+    illumination:    'Illumination',
+    next_full_moon:  'Next full moon',
+    days:            'days',
+    pollen_forecast: 'Pollen Forecast',
+    pollen_none:     'No active pollen',
+    pollen_types: {
+      birk: 'Birch', bynke: 'Mugwort', el: 'Alder', elm: 'Elm',
+      graes: 'Grass', hassel: 'Hazel', alternaria: 'Alternaria', cladosporium: 'Cladosporium',
+    },
     moon_phases: {
       'New Moon':       'New Moon',       'Waxing Crescent': 'Waxing Crescent',
       'First Quarter':  'First Quarter',  'Waxing Gibbous':  'Waxing Gibbous',
@@ -84,10 +90,16 @@ const translations = {
     now:            'Nu',
     today_short:    'I dag',
     dir_n: 'N', dir_e: 'Ø', dir_s: 'S', dir_w: 'V',
-    sunrise_sunset: 'SOL OP & NED',
-    illumination:   'Belysning',
-    next_full_moon: 'Næste fuldmåne',
-    days:           'dage',
+    sunrise_sunset:  'SOL OP & NED',
+    illumination:    'Belysning',
+    next_full_moon:  'Næste fuldmåne',
+    days:            'dage',
+    pollen_forecast: 'Pollenprognose',
+    pollen_none:     'Ingen aktiv pollen',
+    pollen_types: {
+      birk: 'Birk', bynke: 'Bynke', el: 'El', elm: 'Elm',
+      graes: 'Græs', hassel: 'Hassel', alternaria: 'Alternaria', cladosporium: 'Cladosporium',
+    },
     moon_phases: {
       'New Moon':       'Nymåne',           'Waxing Crescent': 'Voksende halvmåne',
       'First Quarter':  'Første kvartal',   'Waxing Gibbous':  'Voksende gibbous',
@@ -600,17 +612,81 @@ document.getElementById('chart-modal-close').addEventListener('click', closeChar
 document.getElementById('chart-modal-backdrop').addEventListener('click', closeChart);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeChart(); });
 
+// ── Pollen widget ────────────────────────────────────────────────────────────
+const POLLEN_TYPES = [
+  { key: 'birk' }, { key: 'bynke' }, { key: 'el' }, { key: 'elm' },
+  { key: 'graes' }, { key: 'hassel' }, { key: 'alternaria' }, { key: 'cladosporium' },
+];
+const ACTIVE_SEVERITIES = new Set(['low', 'moderate', 'high', 'very_high']);
+
+const POLLEN_ICON = `<svg class="pollen-plant-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+  <rect x="2" y="2" width="16" height="16" rx="3" stroke-linecap="round"/>
+  <line x1="6" y1="8" x2="14" y2="8" stroke-linecap="round"/>
+  <line x1="6" y1="12" x2="11" y2="12" stroke-linecap="round"/>
+</svg>`;
+
+function buildPollenWidget(days) {
+  const container = document.getElementById('pollen-widget');
+  if (!container) return;
+  const t = translations[currentLang];
+  const locale = currentLang === 'da' ? 'da-DK' : 'en-GB';
+
+  const activeTypes = POLLEN_TYPES.filter(pt =>
+    days.some(d => ACTIVE_SEVERITIES.has(d[`${pt.key}_severity`]))
+  );
+
+  const title = `<div class="pollen-title" data-i18n="pollen_forecast">${t.pollen_forecast}</div>`;
+
+  if (!days.length || !activeTypes.length) {
+    container.innerHTML = `${title}<div class="pollen-empty">${t.pollen_none}</div>`;
+    return;
+  }
+
+  const dayHeaders = days.map((d, i) => {
+    const [y, mo, dy] = d.date.split('-').map(Number);
+    const dateObj = new Date(y, mo - 1, dy);
+    const label = i === 0
+      ? `<span data-i18n="today_short">${t.today_short}</span>`
+      : dateObj.toLocaleDateString(locale, { weekday: 'short' });
+    return `<div class="pollen-day-label">${label}</div>`;
+  }).join('');
+
+  const rows = activeTypes.map((pt, idx) => {
+    const name = t.pollen_types?.[pt.key] ?? pt.key;
+    const dots = days.map(d => {
+      const sev = d[`${pt.key}_severity`] || 'unknown';
+      return `<div class="pollen-dot-col"><span class="pollen-dot pollen-${sev}"></span></div>`;
+    }).join('');
+    const divider = idx < activeTypes.length - 1 ? '<div class="pollen-divider"></div>' : '';
+    return `
+      <div class="pollen-row">
+        <div class="pollen-name-col">${POLLEN_ICON}<span class="pollen-plant-name">${name}</span></div>
+        ${dots}
+      </div>${divider}`;
+  }).join('');
+
+  container.innerHTML = `
+    ${title}
+    <div class="pollen-header">
+      <div class="pollen-name-col"></div>
+      ${dayHeaders}
+    </div>
+    ${rows}`;
+}
+
 // ── Fetch all data ───────────────────────────────────────────────────────────
 async function fetchAndUpdate() {
   try {
-    const [dataRes, hourlyRes, dailyRes] = await Promise.all([
+    const [dataRes, hourlyRes, dailyRes, pollenRes] = await Promise.all([
       fetch('/api/data'),
       fetch('/api/hourly'),
       fetch('/api/daily'),
+      fetch('/api/pollen'),
     ]);
     if (dataRes.ok)   updatePage(await dataRes.json());
     if (hourlyRes.ok) buildHourlyStrip(await hourlyRes.json());
     if (dailyRes.ok)  buildDailyForecast(await dailyRes.json());
+    if (pollenRes.ok) buildPollenWidget(await pollenRes.json());
   } catch (e) {
     console.warn('Weather fetch failed:', e);
   }

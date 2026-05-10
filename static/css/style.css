@@ -653,6 +653,77 @@ body {
 .daily-high    { width: 34px; font-size: 0.9rem; font-weight: 500; flex-shrink: 0; }
 .daily-divider { height: 1px; background: var(--glass-border); }
 
+/* ── Pollen card ─────────────────────────────────────── */
+.card-pollen { grid-column: 1 / -1; }
+
+.pollen-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.pollen-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.pollen-name-col {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pollen-day-label {
+  width: 44px;
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.pollen-row {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+}
+
+.pollen-plant-icon {
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+
+.pollen-plant-name { font-size: 0.95rem; }
+
+.pollen-dot-col {
+  width: 44px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.pollen-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: block;
+}
+
+.pollen-none      { background: var(--gauge-track); }
+.pollen-low       { background: #a8d5a2; }
+.pollen-moderate  { background: #ffd54f; }
+.pollen-high      { background: #ff9800; }
+.pollen-very_high { background: #ef5350; }
+.pollen-unknown   { background: var(--gauge-track); }
+
+.pollen-divider { height: 8px; }
+
 /* ── Responsive ─────────────────────────────────────── */
 @media (max-width: 680px) {
   .cards-grid { grid-template-columns: 1fr; gap: 12px; padding: 0 12px 32px; }

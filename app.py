@@ -17,6 +17,7 @@ app = Flask(__name__)
 STATION_LAT = float(os.environ["STATION_LAT"])
 STATION_LON = float(os.environ["STATION_LON"])
 STATION_TZ = os.environ["STATION_TZ"]
+POLLEN_REGION = os.getenv("POLLEN_REGION", "koebenhavn")
 
 DB_CONFIG = {
     "host": os.environ["DB_HOST"],
@@ -54,11 +55,14 @@ def weather_icon(name):
 app.jinja_env.filters["weather_icon"] = weather_icon
 
 
-def _query(sql: str, limit: int | None = None) -> Any:
+def _query(sql: str, params: tuple = (), limit: int | None = None) -> Any:
     try:
         conn = mysql.connector.connect(**DB_CONFIG)
         cursor = conn.cursor(dictionary=True)
-        cursor.execute(sql)
+        if params:
+            cursor.execute(sql, params)
+        else:
+            cursor.execute(sql)
         rows = cursor.fetchall() if limit != 1 else [cursor.fetchone()]
         cursor.close()
         conn.close()
@@ -80,6 +84,37 @@ def get_hourly_forecast() -> list[dict[str, Any]]:
 def get_daily_forecast() -> list[dict[str, Any]]:
     """Return up to 14 daily forecast rows ordered by day_num."""
     return _query("SELECT * FROM forecast_daily ORDER BY day_num ASC LIMIT 14")
+
+
+_POLLEN_TYPES = [
+    ("birk", "Birk"),
+    ("bynke", "Bynke"),
+    ("el", "El"),
+    ("elm", "Elm"),
+    ("graes", "Græs"),
+    ("hassel", "Hassel"),
+    ("alternaria", "Alternaria"),
+    ("cladosporium", "Cladosporium"),
+]
+_ACTIVE_SEVS = {"low", "moderate", "high", "very_high"}
+
+
+def get_pollen_data() -> list[dict[str, Any]]:
+    """Return up to 5 days of pollen forecast for the configured region."""
+    return _query(
+        "SELECT * FROM pollen_data WHERE region = %s"
+        " AND date >= CURDATE() ORDER BY date ASC LIMIT 5",
+        params=(POLLEN_REGION,),
+    )
+
+
+def active_pollen_types(rows: list[dict]) -> list[tuple[str, str]]:
+    """Return (key, name) pairs for types with at least one active severity."""
+    return [
+        (key, name)
+        for key, name in _POLLEN_TYPES
+        if any(row.get(f"{key}_severity") in _ACTIVE_SEVS for row in rows)
+    ]
 
 
 def serialize(row):
@@ -249,6 +284,7 @@ def index():
     data = get_weather_data()
     hourly = get_hourly_forecast()
     daily = get_daily_forecast()
+    pollen = get_pollen_data()
     direction = wind_direction(data.get("windbearing") if data else None)
     bars = calc_bars(daily)
     aqi = calc_aqi(data)
@@ -273,6 +309,8 @@ def index():
         sun=sun,
         moon=moon,
         now_index=now_index,
+        pollen=pollen,
+        pollen_active=active_pollen_types(pollen),
     )
 
 
@@ -306,6 +344,12 @@ def api_hourly():
 def api_daily():
     """Return daily forecast rows as a JSON array."""
     return jsonify([serialize(r) for r in get_daily_forecast()])
+
+
+@app.route("/api/pollen")
+def api_pollen():
+    """Return pollen forecast rows as a JSON array."""
+    return jsonify([serialize(r) for r in get_pollen_data()])
 
 
 _HISTORY_FIELDS = {

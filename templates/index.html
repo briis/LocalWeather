@@ -106,6 +106,40 @@
       </div>
       {% endif %}
 
+      <!-- Pollen forecast -->
+      {% if pollen and pollen_active %}
+      <div class="card card-pollen" id="pollen-widget">
+        <div class="pollen-title" data-i18n="pollen_forecast">Pollenprognose</div>
+        <div class="pollen-header">
+          <div class="pollen-name-col"></div>
+          {% for day in pollen %}
+          <div class="pollen-day-label">
+            {% if loop.first %}<span data-i18n="today_short">I dag</span>
+            {% else %}{{ day.date.strftime('%a') }}{% endif %}
+          </div>
+          {% endfor %}
+        </div>
+        {% for type_key, type_name in pollen_active %}
+        <div class="pollen-row">
+          <div class="pollen-name-col">
+            <svg class="pollen-plant-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="2" y="2" width="16" height="16" rx="3" stroke-linecap="round"/>
+              <line x1="6" y1="8" x2="14" y2="8" stroke-linecap="round"/>
+              <line x1="6" y1="12" x2="11" y2="12" stroke-linecap="round"/>
+            </svg>
+            <span class="pollen-plant-name">{{ type_name }}</span>
+          </div>
+          {% for day in pollen %}
+          <div class="pollen-dot-col">
+            <span class="pollen-dot pollen-{{ day[type_key ~ '_severity'] or 'unknown' }}"></span>
+          </div>
+          {% endfor %}
+        </div>
+        {% if not loop.last %}<div class="pollen-divider"></div>{% endif %}
+        {% endfor %}
+      </div>
+      {% endif %}
+
       <!-- Wind -->
       <div class="card card-wind">
         <div class="card-head">
