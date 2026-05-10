@@ -1,6 +1,6 @@
 # LocalWeather
 
-<!-- cSpell:words gunicorn pytz localweather Meteocons Glassmorphism WSGI forecas chartjs jsdelivr uvsolar airquality -->
+<!-- cSpell:words gunicorn pytz localweather Meteocons Glassmorphism WSGI forecas chartjs jsdelivr uvsolar airquality pollen birk bynke graes hassel alternaria cladosporium koebenhavn -->
 
 A responsive, Apple Weather-inspired dashboard that reads real-time data from a local MySQL database and displays it in a browser or as an iOS/Android home screen web app.
 
@@ -18,6 +18,7 @@ A responsive, Apple Weather-inspired dashboard that reads real-time data from a 
 - **Light / dark / auto theme** — follows OS preference automatically, with a manual toggle (⊙ → ☀ → ☾) that persists in `localStorage`
 - **EN / DA language toggle** — all widget labels and values switch between English and Danish, preference saved in `localStorage`
 - **PWA / iOS web app** — installable on iPhone/iPad, supports `viewport-fit=cover` and safe-area insets
+- **Pollen forecast** — 5-day pollen widget showing counts and severity (low / moderate / high / very high) for up to 8 types (Birch, Mugwort, Alder, Elm, Grass, Hazel, Alternaria, Cladosporium); only types with at least one active severity day are displayed; today's detail panel expands inline
 - **Auto-refresh** — data updates every 60 seconds without a page reload
 
 ## Screenshots
@@ -31,13 +32,15 @@ MySQL (weather_history)
   ├── realtime_data      ← live station readings
   ├── forecast_hourly    ← 72-hour hourly forecast
   ├── forecast_daily     ← 14-day daily forecast
-  └── minute_data        ← per-minute history (36-hour chart source)
+  ├── minute_data        ← per-minute history (36-hour chart source)
+  └── pollen_data        ← 5-day pollen forecast per region
 
 Flask (app.py)  →  Jinja2 template  →  Browser
                 →  /api/data        ← JS polled every 60 s
                 →  /api/hourly
                 →  /api/daily
                 →  /api/history     ← history charts (36 h of minute_data)
+                →  /api/pollen     ← 5-day pollen forecast (region-filtered)
 ```
 
 ## Configuration
@@ -53,6 +56,9 @@ cp .env.example .env
 STATION_LAT=55.64
 STATION_LON=12.09
 STATION_TZ=Europe/Copenhagen
+
+# Pollen forecast region (must match the `region` column in pollen_data)
+POLLEN_REGION=koebenhavn
 
 # MySQL database connection
 DB_HOST=192.168.1.9
@@ -74,6 +80,7 @@ The app reads from three tables. Reference schemas are in [Docs/](Docs/).
 | `forecast_hourly` | One row per forecast hour (`hour_num` 0–71, starting midnight local time) |
 | `forecast_daily` | One row per forecast day (`day_num` 0–13) |
 | `minute_data` | Per-minute historical readings, queried for the last 36 hours by `/api/history` |
+| `pollen_data` | One row per region per date; columns follow the pattern `{type}_count` / `{type}_severity` for each of the 8 pollen types |
 
 ## Development
 
@@ -166,6 +173,7 @@ The app will be served on **port 80** of the LXC's IP address.
 | `GET /api/hourly` | Hourly forecast (72 entries) as JSON |
 | `GET /api/daily` | Daily forecast (14 entries) as JSON |
 | `GET /api/history?fields=f1,f2` | Last 36 hours of `minute_data` for the requested fields as JSON. Allowed fields: `temperature`, `wind_chill`, `heat_index`, `humidity`, `dewpoint`, `rain_rate`, `rain_day`, `wind_speed`, `wind_gust`, `pressure`, `uv`, `solar_radiation`, `air_Quality_pm1`, `air_Quality_pm10`, `air_Quality_pm25` |
+| `GET /api/pollen` | Next 5 days of pollen forecast for the configured `POLLEN_REGION` as JSON |
 
 ## Project Structure
 
@@ -195,9 +203,11 @@ LocalWeather/
 │   └── lint                # Run ruff format + check
 └── Docs/                   # Reference SQL schemas and example data
     ├── realtime_data_structure.sql
-    ├── forecas_data_structure.sql
+    ├── forecast_data_structure.sql
     ├── minute_data_structure.sql
-    └── example_minute_data.json
+    ├── pollen_data_structure.sql
+    ├── example_minute_data.json
+    └── example_pollen_data.json
 ```
 
 ## Dependencies
