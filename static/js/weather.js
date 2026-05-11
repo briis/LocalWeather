@@ -310,6 +310,11 @@ function buildDailyForecast(days) {
   container.innerHTML = `
     <div class="card-label" data-i18n="daily_forecast">${t.daily_forecast}</div>
     <div class="daily-scroll-v">${rows}</div>`;
+
+  if (days[0] && days[0].precipitation != null) {
+    _todayForecastPrecip = days[0].precipitation;
+    updateRainDrop(_currentRainToday);
+  }
 }
 
 // ── Apply server-rendered data attributes as styles (avoids Jinja/CSS linting conflicts) ──
@@ -381,6 +386,7 @@ function updatePage(d) {
   if (rainRateEl) rainRateEl.innerHTML = `${fmt(d.rainrate)} <span class="unit">mm/h</span>`;
   setEl('rain-today', d.raintoday != null ? `${fmt(d.raintoday)} mm` : '0.0 mm');
   setEl('rain-yesterday', d.rainyesterday != null ? `${fmt(d.rainyesterday)} mm` : '0.0 mm');
+  updateRainDrop(d.raintoday);
 
   const arc = document.getElementById('humidity-arc');
   if (arc) arc.setAttribute('stroke-dasharray', humidityDash(d.humidity));
@@ -741,6 +747,30 @@ function pollenGaugeCard(key, today, t) {
 }
 
 let _pollenDays = null;
+let _todayForecastPrecip = null;
+let _currentRainToday = 0;
+
+function updateRainDrop(rainToday) {
+  const fillGroup = document.getElementById('rain-drop-fill-group');
+  const forecastLabel = document.getElementById('rain-drop-forecast');
+  if (!fillGroup) return;
+
+  const measured = rainToday != null ? rainToday : 0;
+  _currentRainToday = measured;
+
+  let maxRain = _todayForecastPrecip != null ? _todayForecastPrecip : 10;
+  if (measured > maxRain) maxRain = measured;
+
+  const fillFraction = maxRain > 0 ? Math.min(1, measured / maxRain) : 0;
+  const translateY = (112 - 106 * fillFraction).toFixed(1);
+  fillGroup.setAttribute('transform', `translate(0, ${translateY})`);
+
+  if (forecastLabel) {
+    forecastLabel.textContent = _todayForecastPrecip != null
+      ? `▲ ${_todayForecastPrecip.toFixed(1)} mm`
+      : '';
+  }
+}
 
 function openPollenModal() {
   const modal = document.getElementById('pollen-modal');
