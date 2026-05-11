@@ -761,7 +761,10 @@ function updateRainDrop(rainToday) {
   let maxRain = _todayForecastPrecip != null ? _todayForecastPrecip : 10;
   if (measured > maxRain) maxRain = measured;
 
-  const fillFraction = maxRain > 0 ? Math.min(1, measured / maxRain) : 0;
+  const rawFraction = maxRain > 0 ? Math.min(1, measured / maxRain) : 0;
+  // Linear scale so fill level is proportional to measured/forecast.
+  // 5% floor ensures any non-zero rain shows a visible sliver.
+  const fillFraction = measured > 0 ? Math.max(0.05, rawFraction) : 0;
   const translateY = (112 - 106 * fillFraction).toFixed(1);
   fillGroup.setAttribute('transform', `translate(0, ${translateY})`);
 
