@@ -46,6 +46,7 @@ const translations = {
     days:            'days',
     sunrise:         'Sunrise',
     sunset:          'Sunset',
+    page_title_prefix: 'Weather in',
     pollen_forecast: 'Pollen Forecast',
     pollen_today:    'Pollen Today',
     pollen_none:     'No active pollen',
@@ -103,6 +104,7 @@ const translations = {
     days:            'dage',
     sunrise:         'Sol op',
     sunset:          'Sol ned',
+    page_title_prefix: 'Vejret i',
     pollen_forecast: 'Pollenprognose',
     pollen_today:    'Pollen i dag',
     pollen_none:     'Ingen aktiv pollen',
@@ -160,6 +162,8 @@ function applyTranslations(lang) {
   document.documentElement.lang = lang;
   const btn = document.getElementById('lang-toggle');
   if (btn) btn.textContent = lang === 'en' ? 'DA' : 'EN';
+  const stationName = document.querySelector('.station-name')?.textContent?.trim();
+  if (stationName) document.title = t.page_title_prefix + ' ' + stationName;
   updateTimestamp();
 }
 

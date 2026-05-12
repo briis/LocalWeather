@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Local Weather</title>
+  <title>Vejret i {{ data.mb_stationname if data and data.mb_stationname else '' }}</title>
 
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
-  <link rel="icon" type="image/png" sizes="32x32" href="/static/images/partly-cloudy-day.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/static/icon-192.png" />
 
   <!-- iOS / iPadOS web app -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Weather" />
-  <link rel="apple-touch-icon" href="/static/images/partly-cloudy-day.png" />
+  <meta name="apple-mobile-web-app-title" content="Lokalt Vejr" />
+  <link rel="apple-touch-icon" href="/static/apple-touch-icon.png" />
 
   <!-- Android / PWA -->
   <meta name="mobile-web-app-capable" content="yes" />

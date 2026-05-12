@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#d0e8f8"/>
+      <stop offset="35%"  stop-color="#bdd8f0"/>
+      <stop offset="65%"  stop-color="#cce3f6"/>
+      <stop offset="100%" stop-color="#deeef8"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <!-- Sun body (scaled from 32x32 viewBox: centre 16,16 r=6 → centre 256,256 r=96) -->
+  <circle fill="#FFC108" cx="256" cy="256" r="96"/>
+  <!-- Cardinal rays -->
+  <line stroke="#FFC108" stroke-width="40" stroke-linecap="round"
+        x1="384" y1="256" x2="448" y2="256"/>
+  <line stroke="#FFC108" stroke-width="40" stroke-linecap="round"
+        x1="128" y1="256" x2="64"  y2="256"/>
+  <line stroke="#FFC108" stroke-width="40" stroke-linecap="round"
+        x1="256" y1="384" x2="256" y2="448"/>
+  <line stroke="#FFC108" stroke-width="40" stroke-linecap="round"
+        x1="256" y1="128" x2="256" y2="64"/>
+  <!-- Diagonal rays -->
+  <line stroke="#FFC108" stroke-width="40" stroke-linecap="round"
+        x1="347.2" y1="347.2" x2="392"   y2="392"/>
+  <line stroke="#FFC108" stroke-width="40" stroke-linecap="round"
+        x1="164.8" y1="347.2" x2="120"   y2="392"/>
+  <line stroke="#FFC108" stroke-width="40" stroke-linecap="round"
+        x1="164.8" y1="164.8" x2="120"   y2="120"/>
+  <line stroke="#FFC108" stroke-width="40" stroke-linecap="round"
+        x1="347.2" y1="164.8" x2="392"   y2="120"/>
+</svg>
