@@ -561,7 +561,7 @@ function buildChart(rows, config) {
       type: 'time',
       time: {
         tooltipFormat:  'dd MMM HH:mm',
-        displayFormats: { hour: 'HH:mm', day: 'dd MMM' },
+        displayFormats: { minute: 'HH:mm', hour: 'HH:mm', day: 'dd MMM' },
       },
       ticks: { color: textColor, maxTicksLimit: 8 },
       grid:  { color: gridColor },
