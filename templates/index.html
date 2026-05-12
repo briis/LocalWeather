@@ -215,8 +215,15 @@
         </div>
         <div class="humidity-gauge">
           <svg viewBox="0 0 120 120" class="gauge-svg">
+            <defs>
+              <linearGradient id="humidity-gradient" x1="110" y1="60" x2="10" y2="60" gradientUnits="userSpaceOnUse">
+                <stop offset="0%"   stop-color="#ffca28"/>
+                <stop offset="50%"  stop-color="#66bb6a"/>
+                <stop offset="100%" stop-color="#4fc3f7"/>
+              </linearGradient>
+            </defs>
             <circle cx="60" cy="60" r="50" class="gauge-bg"/>
-            <circle cx="60" cy="60" r="50" class="gauge-fill" id="humidity-arc"
+            <circle cx="60" cy="60" r="50" class="gauge-fill humidity-fill" id="humidity-arc"
               stroke-dasharray="{{ (data.humidity / 100 * 314.16)|round(1) if data and data.humidity is not none else 0 }} 314.16"
               stroke-dashoffset="78.54"/>
             <text x="60" y="65" text-anchor="middle" class="gauge-text" id="humidity-val">{{ data.humidity if data and data.humidity is not none else '—' }}%</text>
@@ -246,6 +253,13 @@
         <div class="pressure-body">
           <div class="pressure-gauge">
             <svg viewBox="0 0 120 68" class="pressure-gauge-svg">
+              <defs>
+                <linearGradient id="pressure-gradient" x1="6" y1="0" x2="114" y2="0" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%"   stop-color="#4fc3f7"/>
+                  <stop offset="45%"  stop-color="#66bb6a"/>
+                  <stop offset="100%" stop-color="#ff7043"/>
+                </linearGradient>
+              </defs>
               <path d="M 6,63 A 54,54 0 0 1 114,63" class="pressure-track" pathLength="169.65"/>
               <path d="M 6,63 A 54,54 0 0 1 114,63" class="pressure-fill" id="pressure-arc"
                 pathLength="169.65" stroke-dasharray="{{ p_dash }} 169.65"/>
