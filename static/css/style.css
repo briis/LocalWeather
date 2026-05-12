@@ -624,7 +624,9 @@ body {
   align-items: center;
   gap: 10px;
   padding: 9px 0;
+  cursor: pointer;
 }
+.daily-row:hover { background: rgba(128,128,128,0.07); border-radius: 4px; }
 
 .daily-day  { width: 52px; font-size: 1rem; font-weight: 400; flex-shrink: 0; }
 .daily-icon { font-size: 1.3rem; width: 28px; text-align: center; flex-shrink: 0; }
@@ -656,6 +658,52 @@ body {
 
 .daily-high    { width: 34px; font-size: 0.9rem; font-weight: 500; flex-shrink: 0; }
 .daily-divider { height: 1px; background: var(--glass-border); }
+
+.daily-chevron {
+  width: 6px;
+  height: 6px;
+  border-right: 1.5px solid var(--text-dim);
+  border-bottom: 1.5px solid var(--text-dim);
+  transform: rotate(-45deg);
+  transition: transform 0.25s;
+  flex-shrink: 0;
+  margin-left: 2px;
+}
+.daily-item.open .daily-chevron { transform: rotate(45deg); }
+
+.daily-expand {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  padding: 0 2px;
+}
+.daily-item.open .daily-expand { max-height: 200px; }
+
+.daily-detail-desc {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  font-style: italic;
+  padding-bottom: 8px;
+  line-height: 1.35;
+}
+
+.daily-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 16px;
+  padding-bottom: 10px;
+}
+
+.daily-detail-item { display: flex; flex-direction: column; gap: 1px; }
+
+.daily-detail-label {
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.daily-detail-val { font-size: 0.8rem; }
 
 /* ── Pollen card ─────────────────────────────────────── */
 .card-pollen { grid-column: 1 / -1; }

@@ -44,6 +44,8 @@ const translations = {
     illumination:    'Illumination',
     next_full_moon:  'Next full moon',
     days:            'days',
+    sunrise:         'Sunrise',
+    sunset:          'Sunset',
     pollen_forecast: 'Pollen Forecast',
     pollen_today:    'Pollen Today',
     pollen_none:     'No active pollen',
@@ -99,6 +101,8 @@ const translations = {
     illumination:    'Belysning',
     next_full_moon:  'Næste fuldmåne',
     days:            'dage',
+    sunrise:         'Sol op',
+    sunset:          'Sol ned',
     pollen_forecast: 'Pollenprognose',
     pollen_today:    'Pollen i dag',
     pollen_none:     'Ingen aktiv pollen',
@@ -245,6 +249,17 @@ function setEl(id, value) {
 }
 
 // ── Forecast builders ────────────────────────────────────────────────────────
+function bearingToDir(deg) {
+  if (deg == null) return '—';
+  const dirs = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+  return dirs[Math.round(deg / 22.5) % 16];
+}
+
+function epochToTime(epoch) {
+  if (!epoch) return '—';
+  return new Date(epoch * 1000).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+}
+
 function buildHourlyStrip(hours) {
   const container = document.getElementById('hourly-scroll');
   if (!container || !hours.length) return;
@@ -295,21 +310,71 @@ function buildDailyForecast(days) {
     const left  = Math.max(0, (lo - gmin) / span * 100).toFixed(1);
     const width = Math.max(2, (hi - lo)   / span * 100).toFixed(1);
     const divider = i < slice.length - 1 ? '<div class="daily-divider"></div>' : '';
+
+    const rainStr   = `${d.precipitation_probability ?? '—'}% · ${d.precipitation != null ? d.precipitation.toFixed(1) : '—'} mm`;
+    const windStr   = d.wind_speed != null
+      ? `${bearingToDir(d.wind_bearing)} ${d.wind_speed.toFixed(1)} m/s · ${t.gusts.toLowerCase()} ${d.wind_gust != null ? d.wind_gust.toFixed(1) : '—'} m/s`
+      : '—';
+    const pressStr  = d.pressure != null ? `${Math.round(d.pressure)} hPa` : '—';
+    const sunStr    = `${epochToTime(d.sunriseepoch)} ↑  ${epochToTime(d.sunsetepoch)} ↓`;
+    const descHtml  = d.description
+      ? `<div class="daily-detail-desc">${d.description}</div>` : '';
+
     return `
-      <div class="daily-row">
-        <div class="daily-day">${fmtDay(d.datetime, i)}</div>
-        <div class="daily-icon">${icon(d.icon)}</div>
-        <div class="daily-low">${d.temp_low != null ? Math.round(d.temp_low) : '—'}°</div>
-        <div class="daily-bar-bg">
-          <div class="daily-bar-fill" style="left:${left}%;width:${width}%"></div>
+      <div class="daily-item">
+        <div class="daily-row">
+          <div class="daily-day">${fmtDay(d.datetime, i)}</div>
+          <div class="daily-icon">${icon(d.icon)}</div>
+          <div class="daily-low">${d.temp_low != null ? Math.round(d.temp_low) : '—'}°</div>
+          <div class="daily-bar-bg">
+            <div class="daily-bar-fill" style="left:${left}%;width:${width}%"></div>
+          </div>
+          <div class="daily-high">${d.temperature != null ? Math.round(d.temperature) : '—'}°</div>
+          <div class="daily-chevron"></div>
         </div>
-        <div class="daily-high">${d.temperature != null ? Math.round(d.temperature) : '—'}°</div>
+        <div class="daily-expand">
+          ${descHtml}
+          <div class="daily-detail-grid">
+            <div class="daily-detail-item">
+              <span class="daily-detail-label">${t.rain}</span>
+              <span class="daily-detail-val">${rainStr}</span>
+            </div>
+            <div class="daily-detail-item">
+              <span class="daily-detail-label">${t.wind}</span>
+              <span class="daily-detail-val">${windStr}</span>
+            </div>
+            <div class="daily-detail-item">
+              <span class="daily-detail-label">${t.pressure}</span>
+              <span class="daily-detail-val">${pressStr}</span>
+            </div>
+            <div class="daily-detail-item">
+              <span class="daily-detail-label">${t.sunrise} / ${t.sunset}</span>
+              <span class="daily-detail-val">${sunStr}</span>
+            </div>
+          </div>
+        </div>
       </div>${divider}`;
   }).join('');
 
   container.innerHTML = `
     <div class="card-label" data-i18n="daily_forecast">${t.daily_forecast}</div>
     <div class="daily-scroll-v">${rows}</div>`;
+
+  if (!container._hasAccordion) {
+    container._hasAccordion = true;
+    container.addEventListener('click', e => {
+      const row = e.target.closest('.daily-row');
+      if (!row) return;
+      const item = row.closest('.daily-item');
+      const expand = item.querySelector('.daily-expand');
+      const isOpen = item.classList.contains('open');
+      container.querySelectorAll('.daily-item.open').forEach(el => el.classList.remove('open'));
+      if (!isOpen) {
+        item.classList.add('open');
+        setTimeout(() => expand.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 310);
+      }
+    });
+  }
 
   if (days[0] && days[0].precipitation != null) {
     _todayForecastPrecip = days[0].precipitation;
