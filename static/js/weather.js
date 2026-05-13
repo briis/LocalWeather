@@ -568,8 +568,8 @@ const HISTORY_CONFIGS = {
     y2Label:   '°C',
     dualAxis:  true,
     datasets: [
-      { field: 'humidity', label: { en: 'Humidity',  da: 'Fugtighed' }, color: '#42a5f5', yAxisID: 'y'  },
-      { field: 'dewpoint', label: { en: 'Dew point', da: 'Dugpunkt'  }, color: '#80cbc4', yAxisID: 'y2' },
+      { field: 'humidity', label: { en: 'Humidity',  da: 'Fugtighed' }, color: '#1e88e5', yAxisID: 'y'  },
+      { field: 'dewpoint', label: { en: 'Dew point', da: 'Dugpunkt'  }, color: '#00bcd4', yAxisID: 'y2' },
     ],
   },
   pressure: {
