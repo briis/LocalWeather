@@ -671,7 +671,18 @@ function buildChart(rows, config) {
       interaction: { mode: 'index', intersect: false },
       plugins: {
         legend:  { labels: { color: textColor, boxWidth: 12, padding: 12 } },
-        tooltip: { backgroundColor: hexToRgba('#1a3a5c', 0.95) },
+        tooltip: {
+          backgroundColor: hexToRgba('#1a3a5c', 0.95),
+          callbacks: {
+            title: (items) => {
+              if (!items.length) return '';
+              const locale = currentLang === 'da' ? 'da-DK' : 'en-GB';
+              return new Date(items[0].parsed.x).toLocaleString(locale, {
+                day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false,
+              });
+            },
+          },
+        },
       },
       scales,
     },
