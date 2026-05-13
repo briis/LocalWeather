@@ -10,7 +10,7 @@ A responsive, Apple Weather-inspired dashboard that reads real-time data from a 
 
 - **Real-time weather** — temperature, wind, rain, humidity, pressure, UV index, solar radiation, air quality (PM1 / PM2.5 / PM10 with AQI)
 - **Hourly forecast** — scrollable 72-hour strip, automatically positioned at the current hour
-- **14-day forecast** — vertically scrollable daily strip with temperature range bars
+- **14-day forecast** — vertically scrollable daily strip with temperature range bars; tap any row to expand an accordion panel showing rain, wind, pressure, sunrise/sunset times, and a weather description — only one day is open at a time
 - **Sunrise & sunset** — animated arc showing the sun's current position through the day
 - **Moon phase** — SVG phase graphic, illumination percentage, and days to next full moon
 - **Pressure gauge** — semi-circular speedometer-style arc gauge for barometric pressure
@@ -180,35 +180,45 @@ The app will be served on **port 80** of the LXC's IP address.
 
 ```text
 LocalWeather/
-├── app.py                  # Flask app, DB queries, AQI / sun / moon logic
-├── .env.example            # Configuration template — copy to .env and edit
-├── aqi_calculator.py       # EPA AQI calculation from PM2.5 and PM10
+├── app.py                        # Flask app, DB queries, AQI / sun / moon logic
+├── aqi_calculator.py             # EPA AQI calculation from PM2.5 and PM10
 ├── requirements.txt
+├── .env.example                  # Configuration template — copy to .env and edit
+├── LocalWeather.code-workspace   # VS Code workspace file
 ├── templates/
-│   └── index.html          # Single-page Jinja2 template
+│   └── index.html                # Single-page Jinja2 template
 ├── static/
-│   ├── css/style.css       # Glassmorphism UI, responsive grid, light/dark theme
-│   ├── js/weather.js       # Auto-refresh, language/theme switching, forecast builders, history charts
-│   ├── images/             # Meteocons PNG weather icons
+│   ├── css/style.css             # Glassmorphism UI, responsive grid, light/dark theme
+│   ├── js/weather.js             # Auto-refresh, language/theme switching, forecast builders, history charts
+│   ├── images/                   # Meteocons PNG weather icons
 │   ├── favicon.svg
-│   └── manifest.json       # PWA manifest
-├── deploy/                 # Production deployment (not copied to live server)
-│   ├── deploy.sh
-│   ├── localweather.service
-│   └── localweather.nginx
-├── Dockerfile              # Dev environment only
-├── docker-compose.yml      # Dev environment only
-├── .devcontainer/          # VS Code Dev Containers config
-├── .ruff.toml              # Linter config
+│   ├── apple-touch-icon-source.svg  # Source SVG for the iOS home screen icon
+│   ├── apple-touch-icon.png      # iOS home screen icon (180×180)
+│   ├── icon-192.png              # PWA icon (192×192)
+│   ├── icon-512.png              # PWA icon (512×512)
+│   └── manifest.json             # PWA manifest
+├── deploy/                       # Production deployment scripts
+│   ├── deploy.sh                 # One-shot install + update script
+│   ├── localweather.service      # systemd unit for Gunicorn
+│   └── localweather.nginx        # nginx reverse proxy config
+├── Dockerfile                    # Dev environment only
+├── docker-compose.yml            # Dev environment only
+├── docker-compose.override.yml   # Local overrides (ports, volumes) — not committed
+├── .devcontainer/                # VS Code Dev Containers config
+├── .vscode/
+│   └── settings.json             # Workspace editor settings
+├── .ruff.toml                    # Linter config
 ├── scripts/
-│   └── lint                # Run ruff format + check
-└── Docs/                   # Reference SQL schemas and example data
+│   └── lint                      # Run ruff format + check
+└── Docs/                         # Reference SQL schemas and example data
     ├── realtime_data_structure.sql
     ├── forecast_data_structure.sql
     ├── minute_data_structure.sql
     ├── pollen_data_structure.sql
     ├── example_minute_data.json
-    └── example_pollen_data.json
+    ├── example_pollen_data.json
+    ├── example_forecast_daily.json
+    └── example_forecast_hourly.json
 ```
 
 ## Dependencies
