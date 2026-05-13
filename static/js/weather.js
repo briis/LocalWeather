@@ -117,9 +117,9 @@ const translations = {
       graes: 'Græs', hassel: 'Hassel', alternaria: 'Alternaria', cladosporium: 'Cladosporium',
     },
     moon_phases: {
-      'New Moon':       'Nymåne',           'Waxing Crescent': 'Voksende halvmåne',
-      'First Quarter':  'Første kvartal',   'Waxing Gibbous':  'Voksende gibbous',
-      'Full Moon':      'Fuldmåne',         'Waning Gibbous':  'Aftagende gibbous',
+      'New Moon':       'Nymåne',           'Waxing Crescent': 'Tiltagende halvmåne',
+      'First Quarter':  'Første kvartal',   'Waxing Gibbous':  'Tiltagende måne',
+      'Full Moon':      'Fuldmåne',         'Waning Gibbous':  'Aftagende måne',
       'Last Quarter':   'Sidste kvartal',   'Waning Crescent': 'Aftagende halvmåne',
     },
     aqi_categories: {
