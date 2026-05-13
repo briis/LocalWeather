@@ -359,6 +359,7 @@ _HISTORY_FIELDS = {
     "humidity",
     "dewpoint",
     "rain_rate",
+    "rain_hour",
     "rain_day",
     "wind_speed",
     "wind_gust",

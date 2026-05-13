@@ -551,11 +551,14 @@ const HISTORY_CONFIGS = {
     ],
   },
   rain: {
-    title:   { en: 'Rain — 36h', da: 'Regn — 36t' },
-    fields:  'rain_rate',
-    yLabel:  'mm/h',
+    title:    { en: 'Rain — 36h', da: 'Regn — 36t' },
+    fields:   'rain_rate,rain_hour',
+    yLabel:   'mm/h',
+    y2Label:  'mm',
+    dualAxis: true,
     datasets: [
-      { field: 'rain_rate', label: { en: 'Rain rate', da: 'Regnintensitet' }, color: '#4fc3f7', fill: true },
+      { field: 'rain_rate', label: { en: 'Rain rate', da: 'Regnintensitet' }, color: '#4fc3f7', fill: true,  yAxisID: 'y'  },
+      { field: 'rain_hour', label: { en: 'Rain/hour', da: 'Regn/time'      }, color: '#1565c0', type: 'bar', yAxisID: 'y2' },
     ],
   },
   humidity: {
@@ -621,12 +624,13 @@ function buildChart(rows, config) {
   const textColor  = cssVar('--text-dim') || '#aaa';
 
   const datasets = config.datasets.map(ds => ({
+    type:            ds.type ?? 'line',
     label:           ds.label[currentLang] ?? ds.label.en,
     data:            rows.map(r => ({ x: r.logdate, y: r[ds.field] })),
     borderColor:     ds.color,
-    backgroundColor: ds.fill ? hexToRgba(ds.color, 0.22) : 'transparent',
+    backgroundColor: ds.type === 'bar' ? hexToRgba(ds.color, 0.7) : ds.fill ? hexToRgba(ds.color, 0.22) : 'transparent',
     fill:            ds.fill ?? false,
-    borderWidth:     1.5,
+    borderWidth:     ds.type === 'bar' ? 0 : 1.5,
     pointRadius:     0,
     tension:         0.3,
     yAxisID:         ds.yAxisID ?? 'y',
