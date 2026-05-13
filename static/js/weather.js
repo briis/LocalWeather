@@ -242,9 +242,14 @@ function uvMaskWidth(uv) {
   return Math.max(0, 100 - Math.min(uv / 11 * 100, 100));
 }
 
-function humidityDash(pct) {
+function humidityDashLow(pct) {
   if (pct == null) return '0 314.16';
-  return `${(pct / 100 * 314.16).toFixed(1)} 314.16`;
+  return `${(Math.min(pct, 35) / 100 * 314.16).toFixed(1)} 314.16`;
+}
+function humidityDashHigh(pct) {
+  if (pct == null || pct <= 35) return '0 314.16';
+  const highLen = (pct - 35) / 100 * 314.16;
+  return `${highLen.toFixed(1)} ${(314.16 - highLen).toFixed(1)}`;
 }
 
 function setEl(id, value) {
@@ -458,7 +463,9 @@ function updatePage(d) {
   updateRainDrop(d.raintoday);
 
   const arc = document.getElementById('humidity-arc');
-  if (arc) arc.setAttribute('stroke-dasharray', humidityDash(d.humidity));
+  const arcHigh = document.getElementById('humidity-arc-high');
+  if (arc) arc.setAttribute('stroke-dasharray', humidityDashLow(d.humidity));
+  if (arcHigh) arcHigh.setAttribute('stroke-dasharray', humidityDashHigh(d.humidity));
   setEl('humidity-val', d.humidity != null ? `${d.humidity}%` : '—');
   setEl('dewpoint', d.dewpoint != null ? `${fmt(d.dewpoint)}°` : '—');
 

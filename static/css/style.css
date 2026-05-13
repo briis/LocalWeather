@@ -395,7 +395,8 @@ body {
   transform-origin: 60px 60px;
 }
 
-.humidity-fill { stroke: url(#humidity-gradient); }
+.humidity-fill-low  { stroke: url(#humidity-gradient-low); }
+.humidity-fill-high { stroke: url(#humidity-gradient-high); }
 
 .gauge-text {
   fill: var(--gauge-text);
