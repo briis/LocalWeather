@@ -235,7 +235,7 @@ LocalWeather/
 
 | Library | Version | Purpose |
 | --- | --- | --- |
-| [Chart.js](https://www.chartjs.org/) | 4.4.4 | Time-series history charts |
+| [Chart.js](https://www.chartjs.org/) | 4.5.1 | Time-series history charts |
 | [chartjs-adapter-date-fns](https://github.com/chartjs/chartjs-adapter-date-fns) | 3.0.0 | Date/time axis adapter for Chart.js |
 
 ## License
