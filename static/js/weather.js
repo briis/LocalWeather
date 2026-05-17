@@ -851,6 +851,7 @@ function updateRainDrop(rainToday) {
 
   let maxRain = _todayForecastPrecip != null ? _todayForecastPrecip : 10;
   if (measured > maxRain) maxRain = measured;
+  maxRain += 1;
 
   const rawFraction = maxRain > 0 ? Math.min(1, measured / maxRain) : 0;
   // Linear scale so fill level is proportional to measured/forecast.
