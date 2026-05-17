@@ -24,7 +24,9 @@ A responsive, Apple Weather-inspired dashboard that reads real-time data from a 
 
 ## Screenshots
 
-> Add screenshots here.
+<img src="Docs/screenshots/LocalWeather_1.png" width="600" alt="LocalWeather screenshot 1">
+<img src="Docs/screenshots/LocalWeather_2.png" width="600" alt="LocalWeather screenshot 2">
+<img src="Docs/screenshots/LocalWeather_3.png" width="600" alt="LocalWeather screenshot 3">
 
 ## Architecture
 
