@@ -3,7 +3,7 @@
 // cSpell:words TIMEPROGNOSER DAGES Prognose gmin gmax Moderat Usund følsomme Meget Farlig
 // cSpell:words uvsolar airquality hexToRgba cssVar buildChart openChart closeChart Regnintensitet Dugpunkt Solstråling Luftkvalitet chartjs
 // cSpell:words Nymåne Fuldmåne Halvmåne Voksende Aftagende Belysning fuldmåne dage Gibbous Kvartal SOLNEDGANG SOLDATA
-const REFRESH_INTERVAL = 60000;
+const REFRESH_INTERVAL = 30000;
 
 // ── Translations ────────────────────────────────────────────────────────────
 const translations = {

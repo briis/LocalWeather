@@ -20,7 +20,7 @@ A responsive, Apple Weather-inspired dashboard that reads real-time data from a 
 - **PWA / iOS web app** — installable on iPhone/iPad, supports `viewport-fit=cover` and safe-area insets
 - **Pollen forecast** — 5-day pollen widget showing counts and severity (low / moderate / high / very high) for up to 8 types (Birch, Mugwort, Alder, Elm, Grass, Hazel, Alternaria, Cladosporium); only types with at least one active severity day are displayed; today's detail panel expands inline
 - **Rain gauge drop** — SVG raindrop outline in the rain widget fills from the bottom based on how much of today's precipitation forecast has fallen; if actual rain exceeds the forecast the max scales up automatically so the drop never overflows
-- **Auto-refresh** — data updates every 60 seconds without a page reload
+- **Auto-refresh** — data updates every 30 seconds without a page reload
 
 ## Screenshots
 
