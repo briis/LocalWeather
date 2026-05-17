@@ -15,6 +15,7 @@ fi
 echo "==> Installing system packages"
 apt-get update -qq
 apt-get install -y python3 python3-pip python3-venv nginx git
+apt-get autoremove -y
 
 echo "==> Creating service user"
 id -u localweather &>/dev/null || useradd --system --no-create-home --shell /usr/sbin/nologin localweather
