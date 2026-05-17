@@ -43,7 +43,7 @@ MySQL (weather_history)
   └── pollen_data        ← 5-day pollen forecast per region
 
 Flask (app.py)  →  Jinja2 template  →  Browser
-                →  /api/data        ← JS polled every 60 s
+                →  /api/data        ← JS polled every 30 s
                 →  /api/hourly
                 →  /api/daily
                 →  /api/history     ← history charts (36 h of minute_data)
@@ -189,7 +189,10 @@ LocalWeather/
 ├── app.py                        # Flask app, DB queries, AQI / sun / moon logic
 ├── aqi_calculator.py             # EPA AQI calculation from PM2.5 and PM10
 ├── requirements.txt
+├── LICENSE
 ├── .env.example                  # Configuration template — copy to .env and edit
+├── .gitignore
+├── .dockerignore
 ├── LocalWeather.code-workspace   # VS Code workspace file
 ├── templates/
 │   └── index.html                # Single-page Jinja2 template
@@ -224,7 +227,8 @@ LocalWeather/
     ├── example_minute_data.json
     ├── example_pollen_data.json
     ├── example_forecast_daily.json
-    └── example_forecast_hourly.json
+    ├── example_forecast_hourly.json
+    └── screenshots/              # README screenshots
 ```
 
 ## Dependencies
