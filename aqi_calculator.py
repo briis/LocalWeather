@@ -25,7 +25,7 @@ _PM10_BREAKPOINTS = [
 
 AQI_CATEGORIES = [
     (0, 50, "Good", "#00E400"),
-    (51, 100, "Moderate", "#FFFF00"),
+    (51, 100, "Moderate", "#D4860A"),
     (101, 150, "Unhealthy for Sensitive Groups", "#FF7E00"),
     (151, 200, "Unhealthy", "#FF0000"),
     (201, 300, "Very Unhealthy", "#8F3F97"),

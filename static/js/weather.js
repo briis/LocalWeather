@@ -406,7 +406,6 @@ function initStyles() {
   if (aqiDot) aqiDot.style.left = `${aqiDot.dataset.left || 0}%`;
 
   const aqiCat = document.getElementById('aqi-category');
-  if (aqiCat?.dataset.color) aqiCat.style.color = aqiCat.dataset.color;
 
   document.querySelectorAll('.daily-bar-fill').forEach(el => {
     if (el.dataset.left  != null) el.style.left  = `${el.dataset.left}%`;
@@ -503,7 +502,7 @@ function updatePage(d) {
     if (catEl) {
       const cats = translations[currentLang].aqi_categories;
       catEl.textContent = cats?.[d.aqi.category] ?? d.aqi.category;
-      catEl.style.color = d.aqi.color;
+      catEl.style.color = '';
     }
   }
 

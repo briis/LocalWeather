@@ -555,13 +555,13 @@ body {
 
 .aqi-summary {
   display: flex;
-  align-items: baseline;
+  align-items: flex-end;
   gap: 8px;
   margin-top: 8px;
 }
 
 .aqi-number  { font-size: 2rem; font-weight: 200; line-height: 1; }
-.aqi-category { font-size: 0.85rem; font-weight: 400; }
+.aqi-category { font-size: 0.85rem; font-weight: 400; margin-left: auto; }
 
 .aqi-row {
   display: flex;
