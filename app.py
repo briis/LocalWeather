@@ -46,9 +46,29 @@ ICON_MAP = {
     "exceptional": "extreme.png",
 }
 
+NIGHT_ICON_MAP = {
+    "sunny": "clear-night.png",
+    "partlycloudy": "partly-cloudy-night.png",
+}
 
-def weather_icon(name):
+
+def _is_night(dt, sun):
+    """Return True if dt falls before sunrise or at/after sunset."""
+    if not sun or dt is None:
+        return False
+    try:
+        rise_h, rise_m = map(int, sun["sunrise"].split(":"))
+        set_h, set_m = map(int, sun["sunset"].split(":"))
+        t = dt.hour * 60 + dt.minute
+        return t < rise_h * 60 + rise_m or t >= set_h * 60 + set_m
+    except Exception:
+        return False
+
+
+def weather_icon(name, is_night=False):
     """Return the Meteocons PNG filename for a Home Assistant weather condition name."""
+    if is_night and name in NIGHT_ICON_MAP:
+        return NIGHT_ICON_MAP[name]
     return ICON_MAP.get(name or "", "not-available.png")
 
 
@@ -298,6 +318,8 @@ def index():
             now_index = i
         elif dt is not None:
             break
+    hero_is_night = sun is not None and (sun["progress"] == 0.0 or sun["progress"] == 1.0)
+    hourly_night = [_is_night(h.get("datetime"), sun) for h in hourly]
     return render_template(
         "index.html",
         data=data,
@@ -311,6 +333,8 @@ def index():
         now_index=now_index,
         pollen=pollen,
         pollen_active=active_pollen_types(pollen),
+        hero_is_night=hero_is_night,
+        hourly_night=hourly_night,
     )
 
 

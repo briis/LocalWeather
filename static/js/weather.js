@@ -199,8 +199,24 @@ const ICON_MAP = {
   'exceptional':     'extreme.png',
 };
 
-function icon(name, size = 'sm') {
-  const file = ICON_MAP[name] || 'not-available.png';
+const NIGHT_ICON_MAP = {
+  'sunny':        'clear-night.png',
+  'partlycloudy': 'partly-cloudy-night.png',
+};
+
+function isNight(dt) {
+  const svg = document.querySelector('.sun-arc-svg');
+  if (!svg) return false;
+  const [rh, rm] = (svg.dataset.sunrise || '00:00').split(':').map(Number);
+  const [sh, sm] = (svg.dataset.sunset  || '23:59').split(':').map(Number);
+  const d = dt instanceof Date ? dt : new Date(dt);
+  const t = d.getHours() * 60 + d.getMinutes();
+  return t < rh * 60 + rm || t >= sh * 60 + sm;
+}
+
+function icon(name, size = 'sm', dt = null) {
+  const night = dt !== null && isNight(dt);
+  const file = (night && NIGHT_ICON_MAP[name]) ? NIGHT_ICON_MAP[name] : (ICON_MAP[name] || 'not-available.png');
   return `<img class="wi wi-${size}" src="/static/images/${file}" alt="${name || ''}" onerror="this.src='/static/images/not-available.png'">`;
 }
 
@@ -291,7 +307,7 @@ function buildHourlyStrip(hours) {
       <div class="hour-item">
         <div class="hour-time">${time}</div>
         <div class="hour-precip">${precip}</div>
-        <div class="hour-icon">${icon(h.icon)}</div>
+        <div class="hour-icon">${icon(h.icon, 'sm', h.datetime ? new Date(h.datetime) : null)}</div>
         <div class="hour-temp">${h.temperature != null ? Math.round(h.temperature) : '—'}°</div>
       </div>`;
   }).join('');
@@ -437,7 +453,9 @@ function updateSunDot() {
 function updatePage(d) {
   const heroIcon = document.getElementById('hero-icon');
   if (heroIcon && d.icon) {
-    heroIcon.src = `/static/images/${ICON_MAP[d.icon] || 'not-available.png'}`;
+    const night = isNight(new Date());
+    const file = (night && NIGHT_ICON_MAP[d.icon]) ? NIGHT_ICON_MAP[d.icon] : (ICON_MAP[d.icon] || 'not-available.png');
+    heroIcon.src = `/static/images/${file}`;
     heroIcon.alt = d.icon;
   }
   setEl('temp-now', d.temperature != null ? `${fmtInt(d.temperature)}°` : '—');
