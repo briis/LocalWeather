@@ -767,8 +767,8 @@ body {
 .pollen-none      { background: var(--gauge-track); }
 .pollen-low       { background: #a8d5a2; }
 .pollen-moderate  { background: #ffd54f; }
-.pollen-high      { background: #ff9800; }
-.pollen-very_high { background: #ef5350; }
+.pollen-high      { background: #e53935; }
+.pollen-very_high { background: #8e24aa; }
 .pollen-unknown   { background: var(--gauge-track); }
 
 .pollen-divider { height: 8px; }

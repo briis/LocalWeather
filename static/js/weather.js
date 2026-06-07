@@ -807,8 +807,8 @@ const POLLEN_ARC_LEN = Math.PI * 38; // half-circumference for r=38
 const SEVERITY_COLORS = {
   low:      '#a8d5a2',
   moderate: '#ffd54f',
-  high:     '#ff9800',
-  very_high:'#ef5350',
+  high:     '#e53935',
+  very_high:'#8e24aa',
 };
 
 const SEVERITY_FILL = {
